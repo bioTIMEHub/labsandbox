@@ -66,7 +66,7 @@ LPI.long <- LPI.long %>%
 # Modelling population change over time ----
 # Run linear models of abundance trends over time for each population and extract model coefficients
 LPI.models <- LPI.long %>%
-  group_by(., genus.species.id, lengthyear) %>% 
+  group_by(., system, genus.species.id, lengthyear) %>% 
   do(mod = lm(scalepop ~ year, data = .)) %>%  # Create a linear model for each group
   mutate(., n = df.residual(mod),  # Create columns: degrees of freedom
          intercept = summary(mod)$coeff[1],  # intercept coefficient
@@ -75,6 +75,7 @@ LPI.models <- LPI.long %>%
          slope_se = summary(mod)$coeff[4],  # standard error of slope
          intercept_p = summary(mod)$coeff[7],  # p value of intercept
          slope_p = summary(mod)$coeff[8]) %>%  # p value of slope
+    
   ungroup() %>%
   mutate(., lengthyear = lengthyear) %>%
   filter(., n > 5) # Remove rows where degrees of freedom <5
@@ -108,6 +109,18 @@ theme_LPI <- function(){
 # With broom you can get a dataframe with model outputs
 # Use do() before a function call within a pipe to make the function run for all groupings in the pipe
 
+biomeplots <- LPI.long %>%
+  group_by(., biome, genus.species.id) %>%
+  do(mod = lm(scalepop ~ year, data=.)) %>%
+  tidy(mod) %>%
+  select(., biome, estimate, genus.species.id, term) %>%
+  spread(., term, estimate) %>%
+  ungroup() %>%
+  group_by(., biome) %>%
+  do(ggsave(ggplot(., aes(x = year) + geom_histogram() + theme_LPI()))filename = gsub("", "", paste("Biome_LPI/", unique(as.character(.$biome)), ".pdf", sep="")),
+     device = "pdf")))
+  
+
 # Challenge 2: Slope estimates and SE vs study duration + marginal histograms ----
 # Make a scatterplot of slope estimates and standard errors for all populations vs study duration
 # Add histograms of slope estimates and study duration along the margins of the plots
@@ -125,6 +138,21 @@ ggsave("ch2test.png")
 # Challenge 3: Histograms for each system type (freshwater, marine, terrestrial) ----
 # Make a three panel figure that includes a histogram of slope estimates for each system type
 # Save your figure in the github-practice folder
+
+par(mfrow=c(3,1))
+freshwater <- subset(LPI.models, system == "Freshwater")
+marine <- subset(LPI.models, system == "Marine")
+terrestrial <- subset(LPI.models, system == "Terrestrial")
+
+head(freshwater)
+
+hist(freshwater$slope, main="Freshwater: slope frequency", xlab="Slopes")
+hist(marine$slope, main="Marine: slope frequency", xlab="Slopes")
+hist(terrestrial$slope, main="Terrestrial: slope frequency", xlab="Slopes")
+
+# This can be made in a better way with ggplot2
+
+ggplot(freshwater, aes(x=slope)) + geom_histogram()
 
 # HINTS:
 # The object we made of model outputs (LPI.models) doesn't include the system column
