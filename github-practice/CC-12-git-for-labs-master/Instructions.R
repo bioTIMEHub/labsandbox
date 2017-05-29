@@ -13,7 +13,7 @@ library(RColorBrewer)
 library(gridExtra)
 
 # Load data ----
-load("LPIdata_Feb2016.RData")
+load("github-practice/CC-12-git-for-labs-master/LPIdata_Feb2016.RData")
 View(head(LPIdata_Feb2016))
 
 # Format data for analysis ----
@@ -116,6 +116,12 @@ theme_LPI <- function(){
 # HINTS:
 # You can use the package ggExtra to easily make marginal histograms for ggplot2 objects
 
+head(LPI.models)
+(g1<-ggplot(LPI.models, aes(x=lengthyear, y=slope))+geom_point(size=1, colour="gray70"))
+(g1<-g1+theme_LPI())
+(g1<-g1+geom_errorbar(aes(ymin=slope-slope_se, ymax=slope+slope_se)))
+g1<-g1+ggExtra::ggMarginal(g1, type = "histogram", margins = "y", size = 4, colour="gray50", fill="darkgreen")
+ggsave("ch2test.png")
 # Challenge 3: Histograms for each system type (freshwater, marine, terrestrial) ----
 # Make a three panel figure that includes a histogram of slope estimates for each system type
 # Save your figure in the github-practice folder
