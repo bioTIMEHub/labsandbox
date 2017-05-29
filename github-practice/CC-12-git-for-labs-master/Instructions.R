@@ -109,6 +109,18 @@ theme_LPI <- function(){
 # With broom you can get a dataframe with model outputs
 # Use do() before a function call within a pipe to make the function run for all groupings in the pipe
 
+biomeplots <- LPI.long %>%
+  group_by(., biome, genus.species.id) %>%
+  do(mod = lm(scalepop ~ year, data=.)) %>%
+  tidy(mod) %>%
+  select(., biome, estimate, genus.species.id, term) %>%
+  spread(., term, estimate) %>%
+  ungroup() %>%
+  group_by(., biome) %>%
+  do(ggsave(ggplot(., aes(x = year) + geom_histogram() + theme_LPI()))filename = gsub("", "", paste("Biome_LPI/", unique(as.character(.$biome)), ".pdf", sep="")),
+     device = "pdf")))
+  
+
 # Challenge 2: Slope estimates and SE vs study duration + marginal histograms ----
 # Make a scatterplot of slope estimates and standard errors for all populations vs study duration
 # Add histograms of slope estimates and study duration along the margins of the plots
