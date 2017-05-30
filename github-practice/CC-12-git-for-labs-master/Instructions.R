@@ -117,8 +117,7 @@ biomeplots <- LPI.long %>%
   spread(., term, estimate) %>%
   ungroup() %>%
   group_by(., biome) %>%
-  do(ggsave(ggplot(., aes(x = year) + geom_histogram() + theme_LPI()))filename = gsub("", "", paste("Biome_LPI/", unique(as.character(.$biome)), ".pdf", sep="")),
-     device = "pdf")))
+#  do(ggsave(ggplot(., aes(x = year) + geom_histogram() + theme_LPI()))filename = gsub("", "", paste("Biome_LPI/", unique(as.character(.$biome)), ".pdf", sep="")), device = "pdf")))
   
 
 # Challenge 2: Slope estimates and SE vs study duration + marginal histograms ----
