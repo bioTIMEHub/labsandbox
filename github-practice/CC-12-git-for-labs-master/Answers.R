@@ -38,7 +38,7 @@ View(LPI.long[c(1:5,500:505,1000:1005),])
 # If you want all rows/columns, add a comma in the row/column location
 
 # Get rid of strange characters like " / "
-LPI.long$country_list <- gsub(",", "", LPI.long$country.list, fixed = TRUE)
+LPI.long$country.list <- gsub(",", "", LPI.long$country.list, fixed = TRUE)
 LPI.long$biome <- gsub("/", "", LPI.long$biome, fixed = TRUE)
 
 # Examine the tidy data frame
