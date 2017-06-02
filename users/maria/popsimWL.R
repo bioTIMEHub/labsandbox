@@ -33,8 +33,9 @@ hist(Poptrends[,1])
 # LPI ---------------------------------------------------------------------
 
 # this bit is not working
+LogN <- list()
 for(pops in 1:100){
-LogN[[pops]] <- data.frame(Year=1:50, log(Np[pops]))
+LogN[[pops]] <- data.frame(Year=1:50, log(Np[pops,]))
 } 
 
 d.bar <- lapply(LogN, function(x)apply(apply(x[,-1], 2, diff), 1, mean))
