@@ -1,0 +1,253 @@
+---
+title: "Abundance change at different levels of predation"
+author: "Faith Jones"
+date: "16 June 2017"
+output: html_document
+---
+
+Here i present the mixed model results for change in the abundance of predators. There
+are three levels of predation: Wide (group 2 and 3 species), Middle (group2) and 
+Narrow(Hoplias and Crenicichla). Only teh data from July/august is incuded so I 
+could use the 2016 data. Also the survey eatken in 2010 is removed sure to sampling 
+differences. 
+
+```{r, include=FALSE}
+setwd("C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\FishPredation\\Data")
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(lme4)
+library(lsmeans)
+library(pbkrtest)
+
+#preparing data 
+
+fishDataAll <- read.csv("Fish data June 2017.csv")
+head(fishDataAll)
+str(fishDataAll)
+
+
+selectMonths <- c("07", "08")# i am selecting out these months because then i can use the last timepoint 
+
+
+#select data from only the July and Auguest, and remove first year 
+SelectData <- fishDataAll %>% 
+	separate(date, c("Day", "Month", "Year"), sep = "/") %>%
+	filter(Year != 2010)%>%
+	filter(Month %in% selectMonths)
+
+fishData <- data.frame(SelectData)
+
+#calculate biomass
+fishData$TotBiomass <- (fishData$numbercaught + fishData$numberseen)* fishData$weight
+
+#calculating percentage abundance
+TotBioSite<- fishData %>% 
+	group_by(site, Year) %>%
+	summarise(BiomasSiteSum = sum(TotBiomass, na.rm=TRUE))
+
+siteBiomass <- data.frame(TotBioSite)
+
+```
+
+#Narrow level predation definition 
+
+```{r, include=FALSE}
+
+predatorsAbN <- fishData %>% 
+	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata") %>%
+	group_by(site, Year) %>%
+	summarise(AbundanceSum = sum(numbercaught))
+
+predatorsAb <- data.frame(predatorsAbN)
+predatorsAb$Year <- as.numeric(predatorsAb$Year)
+
+#add the total site biomass data, just to i can identify sites with no predators 
+FishDataTotAb <- merge(siteBiomass, predatorsAb, by = c("site" ,"Year"),all=TRUE) # this makes sure i 
+#know what years had no predators recoreded in 
+FishDataTotAb$AbundanceSum[is.na(FishDataTotAb$AbundanceSum)] <- 0
+FishDataTotAb$Year <- as.numeric(FishDataTotAb$Year)
+
+
+#add mean centered year for further analysis
+meanYear <-summarise(FishDataTotAb, meanYear = mean(Year)) 
+FishDataTotAb$meanYear <- meanYear[1,]
+FishDataTotAb$meanCentredYear <-  FishDataTotAb$Year- FishDataTotAb$meanYear	
+
+FishDataTotAb$logAb <- log2(FishDataTotAb$AbundanceSum + 1)
+
+```
+
+Here is the raw plot of predator biomass agaist time, and the plot of log2 biomass
+against time. There is a lot of variability.
+```{r}
+
+AbPlot <- ggplot(FishDataTotAb, aes(x = Year, y = AbundanceSum, col = site, group = site))
+AbPlot + geom_point() +
+	geom_line() +
+	theme_classic() +
+	labs(title="The abunance of Hoplias and Crenicichla", y = "Predator Abundance")
+
+AbPlotLog <- ggplot(FishDataTotAb, aes(x = Year, y = logAb, col = site, group = site))
+AbPlotLog + geom_point() +
+	geom_line() +
+	theme_classic() +
+	labs(title="The abunance of Hoplias and Crenicichla", y = "Predator Abundance")
+
+
+```
+
+Next is the mixed model results and plot of slopes of the sites
+```{r}
+
+AbM1 <- lmer(logAb  ~ meanCentredYear + (meanCentredYear|site), data = FishDataTotAb)
+summary(AbM1)
+
+#plot slopes of sites
+AbM1_Lines <- coef(AbM1)$site[c(1:2)] # get slope and intercept of each line in model 3
+names(AbM1_Lines) <- c("intercept", "slope")
+
+m3.plot <- ggplot(data = FishDataTotAb, aes(x = meanCentredYear, y = logAb)) # plot of model with varying intercept but not slope, but only main slope shown
+m3.plot + geom_blank() + 
+	theme_classic() +
+	geom_abline(slope = AbM1_Lines$slope, intercept = AbM1_Lines$intercept) +
+	labs(title="The slope of abunance change of Hoplias and Crenicichla", y = "Log Predator Abundance")
+
+```
+
+##Middle level predation definition 
+
+```{r, include=FALSE}
+
+predatorsAbNm <- fishData %>% 
+	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata" | 
+		species == "Gymnotus carapo"| species == "Anablepsoides hartii") %>%
+	group_by(site, Year) %>%
+	summarise(AbundanceSum = sum(numbercaught + numberseen))
+
+predatorsAbm <- data.frame(predatorsAbNm)
+predatorsAbm$Year <- as.numeric(predatorsAbm$Year)
+
+#add the total site biomass data, just to i can identify sites with no predators 
+FishDataTotAbm <- merge(siteBiomass, predatorsAbm, by = c("site" ,"Year"),all=TRUE) # this makes sure i 
+#know what years had no predators recoreded in 
+FishDataTotAbm$AbundanceSum[is.na(FishDataTotAbm$AbundanceSum)] <- 0
+FishDataTotAbm$Year <- as.numeric(FishDataTotAbm$Year)
+
+
+#add mean centered year for further analysis
+meanYear <-summarise(FishDataTotAbm, meanYear = mean(Year)) 
+FishDataTotAbm$meanYear <- meanYear[1,]
+FishDataTotAbm$meanCentredYear <-  FishDataTotAbm$Year - FishDataTotAbm$meanYear	
+
+FishDataTotAbm$logAb <- log2(FishDataTotAbm$AbundanceSum + 1)
+
+```
+
+Here is the raw plot of predator biomass agaist time, and the plot of log2 biomass
+against time. There is a lot of variability.
+```{r}
+
+AbPlotm <- ggplot(FishDataTotAbm, aes(x = Year, y = AbundanceSum, col = site, group = site))
+AbPlotm + geom_point() +
+	geom_line() +
+	theme_classic() +
+	labs(title="The abunance group 2", y = "Predator Abundance")
+
+AbPlotLogm <- ggplot(FishDataTotAbm, aes(x = Year, y = logAb, col = site, group = site))
+AbPlotLogm + geom_point() +
+	geom_line() +
+	theme_classic() +
+	labs(title="The abunance of  group 2", y = "Predator Abundance")
+
+
+```
+
+Next is the mixed model results and plot of slopes of the sites
+```{r}
+
+AbM1m <- lmer(logAb  ~ meanCentredYear + (meanCentredYear|site), data = FishDataTotAbm)
+summary(AbM1m)
+
+#plot slopes of sites
+AbM1_Linesm <- coef(AbM1m)$site[c(1:2)] # get slope and intercept of each line in model 3
+names(AbM1_Linesm) <- c("intercept", "slope")
+
+m3.plot <- ggplot(data = FishDataTotAbm, aes(x = meanCentredYear, y = logAb)) # plot of model with varying intercept but not slope, but only main slope shown
+m3.plot + geom_blank() + 
+	theme_classic() +
+	geom_abline(slope = AbM1_Linesm$slope, intercept = AbM1_Linesm$intercept) +
+	labs(title="The slope of abunance change of group 2", y = "Log Predator Abundance")
+
+```
+
+
+##Wide level predation definition 
+
+```{r, include=FALSE}
+
+group12 <- c("Hoplias malabaricus", "Crenicichla frenata", "Gymnotus carapo", "Anablepsoides hartii",
+			"Cichlasoma taenia", "Cichlasoma taenia", "Corynopoma riisei", "Roeboides dientonito", 
+			"Agonostomus monticola", "Rhamdia quelen", "andinoacara pulcher", "Hemigrammus unilineatus")
+
+predatorsAbNw <- fishData %>% 
+	filter(species %in% group12)  %>%
+	group_by(site, Year) %>%
+	summarise(AbundanceSum = sum(numbercaught))
+
+predatorsAbw <- data.frame(predatorsAbNw)
+predatorsAbw$Year <- as.numeric(predatorsAbw$Year)
+
+#add the total site biomass data, just to i can identify sites with no predators 
+FishDataTotAbw <- merge(siteBiomass, predatorsAbw, by = c("site" ,"Year"),all=TRUE) # this makes sure i 
+#know what years had no predators recoreded in 
+FishDataTotAbw$AbundanceSum[is.na(FishDataTotAbw$AbundanceSum)] <- 0
+FishDataTotAbw$Year <- as.numeric(FishDataTotAbw$Year)
+
+#add mean centered year for further analysis
+meanYear <-summarise(FishDataTotAbw, meanYear = mean(Year)) 
+FishDataTotAbw$meanYear <- meanYear[1,]
+FishDataTotAbw$meanCentredYear <-  FishDataTotAbw$Year - FishDataTotAbw$meanYear	
+
+FishDataTotAbw$logAb <- log2(FishDataTotAbw$AbundanceSum + 1)
+
+```
+
+Here is the raw plot of predator biomass agaist time, and the plot of log2 biomass
+against time. There is a lot of variability.
+```{r}
+
+AbPlotw <- ggplot(FishDataTotAbw, aes(x = Year, y = AbundanceSum, col = site, group = site))
+AbPlotw + geom_point() +
+	geom_line() +
+	theme_classic() +
+	labs(title="The abunance group 2 and 3", y = "Predator Abundance")
+
+AbPlotLogw <- ggplot(FishDataTotAbw, aes(x = Year, y = logAb, col = site, group = site))
+AbPlotLogw + geom_point() +
+	geom_line() +
+	theme_classic() +
+	labs(title="The abunance of  group 2 and 3", y = "Predator Abundance")
+
+
+```
+
+Next is the mixed model results and plot of slopes of the sites
+```{r}
+
+AbM1w <- lmer(logAb  ~ meanCentredYear + (meanCentredYear|site), data = FishDataTotAbw)
+summary(AbM1w)
+
+#plot slopes of sites
+AbM1_Linesw <- coef(AbM1w)$site[c(1:2)] # get slope and intercept of each line in model 3
+names(AbM1_Linesw) <- c("intercept", "slope")
+
+m3.plotw <- ggplot(data = FishDataTotAbw, aes(x = meanCentredYear, y = logAb)) # plot of model with varying intercept but not slope, but only main slope shown
+m3.plot + geom_blank() + 
+	theme_classic() +
+	geom_abline(slope = AbM1_Linesw$slope, intercept = AbM1_Linesw$intercept) +
+	labs(title="The slope of abunance change of group 2", y = "Log Predator Abundance")
+```
+
+
