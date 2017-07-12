@@ -1,0 +1,173 @@
+---
+title: "Abundance predators"
+author: "Faith Jones"
+date: "15 June 2017"
+output: html_document
+---
+```{r, include=FALSE}
+###Making a plot of how high pressure predation sites are when measured in 
+#different levels of predation ABUNDANCE
+
+setwd("C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\FishPredation\\Data")
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(lme4)
+
+
+#preparing data 
+
+fishDataAll <- read.csv("Fish data June 2017.csv")
+head(fishDataAll)
+str(fishDataAll)
+levels(fishDataAll$species)
+selectMonths <- c("07", "08")# i am selecting out these months because then i can use the last timepoint 
+
+group12 <- c("Hoplias malabaricus", "Crenicichla frenata", "Gymnotus carapo", "Anablepsoides hartii",
+			"Cichlasoma taenia", "Cichlasoma taenia", "Corynopoma riisei", "Roeboides dientonito", 
+			"Agonostomus monticola", "Rhamdia quelen", "andinoacara pulcher", "Hemigrammus unilineatus")
+
+
+
+#select data from only the July and Auguest, and remove first year 
+SelectData <- fishDataAll %>% 
+	separate(date, c("Day", "Month", "Year"), sep = "/") %>%
+	filter(Year != 2010)%>%
+	filter(Month %in% selectMonths)
+
+fishData <- data.frame(SelectData)
+
+fishData$AbundanceAll <- fishData$numbercaught + fishData$numberseen
+
+#calculating percentage biomass so i can incude years with 0 abundance
+
+fishData$TotBiomass <- (fishData$numbercaught + fishData$numberseen)* fishData$weight
+TotBioSite<- fishData %>% 
+	group_by(site, Year) %>%
+	summarise(BiomasSiteSum = sum(TotBiomass, na.rm=TRUE))
+siteBiomass <- data.frame(TotBioSite)
+
+
+#Narrow Predation data
+#-------------------------
+predatorsAbN <- fishData %>% 
+	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata")  %>%
+	group_by(site, Year) %>%
+	summarise(AbundanceSum = sum(AbundanceAll))
+
+predatorsAb <- data.frame(predatorsAbN)
+predatorsAb$Year <- as.numeric(predatorsAb$Year)
+
+#add the total site biomass data, just to i can identify sites with no predators 
+FishDataTotAb <- merge(siteBiomass, predatorsAb, by = c("site" ,"Year"),all=TRUE) # this makes sure i 
+#know what years had no predators recoreded in 
+FishDataTotAb$AbundanceSum[is.na(FishDataTotAb$AbundanceSum)] <- 0
+
+Narrow <- aggregate(FishDataTotAb$AbundanceSum, list(FishDataTotAb$site), mean, na.rm=TRUE)
+
+orderNarrow <- Narrow[order(Narrow$x),]
+head(orderNarrow)
+
+orderNarrow$predOrderN <- c(1:nrow(orderNarrow))
+
+#Middle predation 
+#------------------------------
+
+#there are no fsih of species Anablepsoides hartii
+
+#sum abundance per site and year
+predatorsAbM <- fishData %>% 
+	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata" | 
+		species == "Gymnotus carapo") %>%
+	group_by(site, Year) %>%
+	summarise(AbundanceSum = sum(AbundanceAll))
+
+predatorsAbMl <- data.frame(predatorsAbM)
+
+predatorsAbMl$Year <- as.numeric(predatorsAbMl$Year)
+
+#add the total site biomass data, just to i can identify sites with no predators 
+FishDataTotAbM <- merge(siteBiomass, predatorsAbMl, by = c("site" ,"Year"),all=TRUE) # this makes sure i 
+#know what years had no predators recoreded in 
+FishDataTotAbM$AbundanceSum[is.na(FishDataTotAbM$AbundanceSum)] <- 0
+
+Middle <- aggregate(FishDataTotAbM$AbundanceSum, list(FishDataTotAbM$site), mean, na.rm=TRUE)
+
+orderMiddle<- Middle[order(Middle$x),]
+head(orderMiddle)
+
+orderMiddle$predOrderM <- c(1:nrow(orderMiddle))
+
+#Wide predation 
+#------------------------------
+
+#there are no fsih of species Anablepsoides hartii
+
+#sum abundance per site and year
+predatorsAbW <- fishData %>% 
+	filter(species %in% group12) %>%
+	group_by(site, Year) %>%
+	summarise(AbundanceSum = sum(AbundanceAll))
+
+predatorsAbWd <- data.frame(predatorsAbW)
+predatorsAbWd$Year <- as.numeric(predatorsAbWd$Year)
+
+#add the total site biomass data, just to i can identify sites with no predators 
+FishDataTotAbW <- merge(siteBiomass, predatorsAbWd, by = c("site" ,"Year"),all=TRUE) # this makes sure i 
+#know what years had no predators recoreded in 
+FishDataTotAbW$AbundanceSum[is.na(FishDataTotAbW$AbundanceSum)] <- 0
+
+Wide <- aggregate(FishDataTotAbW$AbundanceSum, list(FishDataTotAbW$site), mean, na.rm=TRUE)
+
+orderWide <- Wide[order(Wide$x),]
+head(orderWide)
+
+orderWide$predOrderW <- c(1:nrow(orderWide))
+
+
+##merge all data 
+#-----------------------------
+
+orderNM <- merge(orderNarrow, orderMiddle, by = "Group.1")
+orderNMW <- merge(orderNM, orderWide, by = "Group.1")
+
+
+```
+
+Here is a plot showing the relationship between different levels of predation - 
+Wide (group 2 and 3 species), Middle (group2) and Narrow(Hoplias and Crenicichla).
+Sites are listed in decending order of mean predator pressure.
+
+```{r}
+plotSetup <- data.frame(cbind(c(1:17),c(20:87))) # data to plot onto emptyp plot
+plot(x = plotSetup$X2, y = plotSetup$X1, col="white", axes=FALSE , ylab = " ", xlab = "  ", main = "Abundance")
+
+#plot arrows
+arrows(x0 = 36, y0 = orderNMW$predOrderN, x1 = 48, y1 = orderNMW$predOrderM, length = 0.001)
+arrows(x0 = 60, y0 = orderNMW$predOrderM, x1 = 72, y1 = orderNMW$predOrderW, length = 0.001)
+
+
+#plotting text 
+text(x = 54, y = orderNMW$predOrderM, labels = orderNMW$Group.1)
+text(x = 30, y = orderNMW$predOrderN, labels = orderNMW$Group.1)
+text(x = 78, y = orderNMW$predOrderW, labels = orderNMW$Group.1)
+
+text(x = 30, y = 16.75, labels = "Narrow Predation", cex = 1.25)
+text(x = 54, y = 16.75, labels = "Middle Predation", cex = 1.25)
+text(x = 78, y = 16.75, labels = "Wide Predation", cex = 1.25)
+
+```
+
+There is no obvious difference between narrow and middle defiinitions of predation
+(spearman rank corrilation of 1). There is some difefference bewteenmiddle and wide
+predation sites, but they are still strongly corrilated. 
+
+```{r}
+rownames(orderNMW) <- orderNMW$Group.1
+corOrderNMW <- orderNMW[,c(2, 4, 6)] 
+names(corOrderNMW ) <- c("Narrow", "Middle", "Wide")
+cor(corOrderNMW, method="spearman")
+```
+
+
