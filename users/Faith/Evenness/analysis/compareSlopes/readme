@@ -2,3 +2,10 @@ Here I used the extracted slopes of change in species richness and evenness for 
 These slopes are extracted from the mixed models. 
 I compare by plotting both data and running Spearmans Rank corrilation tests
 I also split data into smaller chunks - taxa and big/small assemblage
+
+Data:
+1. evennessChangeSimpAb - slopes of change of PIE evenness
+2. evennessChange - slopes of change of Pielous evenness
+3. SpeciesRichnessChange - slopes of change of species richness 
+
+Analysis Code
