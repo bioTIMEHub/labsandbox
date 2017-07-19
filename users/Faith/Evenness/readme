@@ -5,3 +5,5 @@ The bioTime database was used for this analysis
 For every dataset sample based rarefation was used to account for ampling effort differences. 
   In order to retain individual species identites I only rarefied once, instead of rarefying many 
   times and taking a mean
+
+The draft paper is contained in "Evenness analysis_v2"
