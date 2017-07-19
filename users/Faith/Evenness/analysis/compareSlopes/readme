@@ -15,4 +15,5 @@ Analysis Code
 2. SrEvennessChange_bigSmall.r - code seperating data into assemblages of few 
    species (>20) and may species (<20), to see if teh corrilation is different
    for small assemblages. Also included are plots of these two groups
-3. 
+3. Evemmes_SR_AssemblageSizePIE.rmd - R markdown file containing plots of evenness 
+   change (PIE) against both species richness and assemblage size 
