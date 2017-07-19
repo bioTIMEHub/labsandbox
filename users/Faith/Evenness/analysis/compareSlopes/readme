@@ -9,3 +9,10 @@ Data:
 3. SpeciesRichnessChange - slopes of change of species richness 
 
 Analysis Code
+1. CompareResults_ellipse.r - this code contains most of the different
+   ways i tried anlyising the two slopes of change. This incudes early cluster 
+   analyses, corrilation tests and plots
+2. SrEvennessChange_bigSmall.r - code seperating data into assemblages of few 
+   species (>20) and may species (<20), to see if teh corrilation is different
+   for small assemblages. Also included are plots of these two groups
+3. 
