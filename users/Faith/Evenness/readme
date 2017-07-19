@@ -7,3 +7,5 @@ For every dataset sample based rarefation was used to account for ampling effort
   times and taking a mean
 
 The draft paper is contained in "Evenness analysis_v2"
+
+data is not generally incuded in this repository as data files can be very large. 
