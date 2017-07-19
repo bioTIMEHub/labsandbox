@@ -1,2 +1,4 @@
-This folder contains the rarefaction code i used to rarefy the data in this analysis. I based it on teh rarefaction code Maria Dornelas used in teh 2014 science paper 
-Also in thsi folder is the code for remobing years where two few speceis were recorded. These years were removed so teh sample based rarefaction did not loose too much information. 
+This folder contains the rarefaction code i used to rarefy the data in this analysis. 
+I based it on the rarefaction code Maria Dornelas used in teh 2014 science paper 
+Also in this folder is the code for removing years where too few speceis were recorded. 
+These years were removed so the sample based rarefaction did not loose too much information. 
