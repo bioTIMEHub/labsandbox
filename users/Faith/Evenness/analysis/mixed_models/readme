@@ -1,7 +1,7 @@
 Here are the three mixed models I ran:
-  1. Pielou's Evenness
-  2. Pie
-  3. Species Richness
+  1. Pielou's Evenness (Abundance_Calcluate_Evenness)
+  2. Pie (Abundance_Calcluate_Evenness_Sim)
+  3. Species Richness (AdundanceAnalysisMixedModel_TAXA_SR)
   
   mean centred year was used in every case as a fixed effect, and Log2 was used for species richness.
   Assemblage was incuded as a random effect with differeing slopes and intercepts 
