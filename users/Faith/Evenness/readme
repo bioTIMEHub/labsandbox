@@ -1,0 +1,7 @@
+This analysis has been undertaen with Anne Magurran (St Andrews) and Shane Blowes (iDiv).
+
+The analysis aims to compare change in sepcies richness within assemblages to change in evenness. 
+The bioTime database was used for this analysis
+For every dataset sample based rarefation was used to account for ampling effort differences. 
+  In order to retain individual species identites I only rarefied once, instead of rarefying many 
+  times and taking a mean
