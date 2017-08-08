@@ -14,6 +14,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(lme4)
+library(Cairo)
 
 
 #preparing data 
@@ -26,7 +27,7 @@ selectMonths <- c("07", "08")# i am selecting out these months because then i ca
 
 group12 <- c("Hoplias malabaricus", "Crenicichla frenata", "Gymnotus carapo", "Anablepsoides hartii",
 			"Cichlasoma taenia", "Cichlasoma taenia", "Corynopoma riisei", "Roeboides dientonito", 
-			"Agonostomus monticola", "Rhamdia quelen", "andinoacara pulcher", "Hemigrammus unilineatus")
+			"Agonostomus monticola", "Rhamdia quelen", "andinoacara pulcher", "Hemigrammus unilineatus", "Rivulus hartii")
 
 
 
@@ -79,7 +80,7 @@ orderNarrow$predOrderN <- c(1:nrow(orderNarrow))
 #sum abundance per site and year
 predatorsAbM <- fishData %>% 
 	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata" | 
-		species == "Gymnotus carapo") %>%
+		species == "Gymnotus carapo" | species == "Rivulus hartii")  %>%
 	group_by(site, Year) %>%
 	summarise(AbundanceSum = sum(AbundanceAll))
 
@@ -140,8 +141,16 @@ Wide (group 2 and 3 species), Middle (group2) and Narrow(Hoplias and Crenicichla
 Sites are listed in decending order of mean predator pressure.
 
 ```{r}
+Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\Adundance_tangle.png",
+      type="png",
+      units="in", 
+      width=8,
+      height=6,
+      pointsize=12,
+      dpi=100)
+
 plotSetup <- data.frame(cbind(c(1:17),c(20:87))) # data to plot onto emptyp plot
-plot(x = plotSetup$X2, y = plotSetup$X1, col="white", axes=FALSE , ylab = " ", xlab = "  ", main = "Abundance")
+plot(x = plotSetup$X2, y = plotSetup$X1, col="white", axes=FALSE , ylab = " ", xlab = "  ")
 
 #plot arrows
 arrows(x0 = 36, y0 = orderNMW$predOrderN, x1 = 48, y1 = orderNMW$predOrderM, length = 0.001)
@@ -153,9 +162,11 @@ text(x = 54, y = orderNMW$predOrderM, labels = orderNMW$Group.1)
 text(x = 30, y = orderNMW$predOrderN, labels = orderNMW$Group.1)
 text(x = 78, y = orderNMW$predOrderW, labels = orderNMW$Group.1)
 
-text(x = 30, y = 16.75, labels = "Narrow Predation", cex = 1.25)
-text(x = 54, y = 16.75, labels = "Middle Predation", cex = 1.25)
-text(x = 78, y = 16.75, labels = "Wide Predation", cex = 1.25)
+text(x = 30, y = 17, labels = "Narrow", cex = 1.5)
+text(x = 54, y = 17, labels = "Intermediate", cex = 1.5)
+text(x = 78, y = 17, labels = "Broad", cex = 1.5)
+
+dev.off()
 
 ```
 
@@ -169,5 +180,3 @@ corOrderNMW <- orderNMW[,c(2, 4, 6)]
 names(corOrderNMW ) <- c("Narrow", "Middle", "Wide")
 cor(corOrderNMW, method="spearman")
 ```
-
-

@@ -122,7 +122,7 @@ m3.plotb + geom_blank() +
 #sum biomass per site and year
 predatorsBioNm <- fishData %>% 
 	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata" | 
-		species == "Gymnotus carapo"| species == "Anablepsoides hartii") %>%
+		species == "Gymnotus carapo"| species ==  "Rivulus hartii") %>%
 	group_by(site, Year) %>%
 	summarise(BiomassSum = sum(TotBiomass))
 
@@ -185,7 +185,7 @@ m3.plotbm + geom_blank() +
 
 group12 <- c("Hoplias malabaricus", "Crenicichla frenata", "Gymnotus carapo", "Anablepsoides hartii",
 			"Cichlasoma taenia", "Cichlasoma taenia", "Corynopoma riisei", "Roeboides dientonito", 
-			"Agonostomus monticola", "Rhamdia quelen", "andinoacara pulcher", "Hemigrammus unilineatus")
+			"Agonostomus monticola", "Rhamdia quelen", "andinoacara pulcher", "Hemigrammus unilineatus", "Rivulus hartii")
 
 #sum biomass per site and year
 predatorsBioNw <- fishData %>% 
