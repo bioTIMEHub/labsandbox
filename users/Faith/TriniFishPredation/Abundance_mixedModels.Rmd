@@ -49,6 +49,9 @@ TotBioSite<- fishData %>%
 
 siteBiomass <- data.frame(TotBioSite)
 
+#calculate overall abundance
+fishData$AbundanceAll <- fishData$numbercaught + fishData$numberseen
+
 ```
 
 #Narrow level predation definition 
@@ -58,7 +61,7 @@ siteBiomass <- data.frame(TotBioSite)
 predatorsAbN <- fishData %>% 
 	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata") %>%
 	group_by(site, Year) %>%
-	summarise(AbundanceSum = sum(numbercaught))
+	summarise(AbundanceSum = sum(AbundanceAll))
 
 predatorsAb <- data.frame(predatorsAbN)
 predatorsAb$Year <- as.numeric(predatorsAb$Year)
@@ -136,7 +139,7 @@ predatorsAbNm <- fishData %>%
 	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata" | 
 		species == "Gymnotus carapo"| species ==  "Rivulus hartii") %>%
 	group_by(site, Year) %>%
-	summarise(AbundanceSum = sum(numbercaught + numberseen))
+	summarise(AbundanceSum = sum(AbundanceAll))
 
 predatorsAbm <- data.frame(predatorsAbNm)
 predatorsAbm$Year <- as.numeric(predatorsAbm$Year)
@@ -218,7 +221,7 @@ group12 <- c("Hoplias malabaricus", "Crenicichla frenata", "Gymnotus carapo", "A
 predatorsAbNw <- fishData %>% 
 	filter(species %in% group12)  %>%
 	group_by(site, Year) %>%
-	summarise(AbundanceSum = sum(numbercaught))
+	summarise(AbundanceSum = sum(AbundanceAll))
 
 predatorsAbw <- data.frame(predatorsAbNw)
 predatorsAbw$Year <- as.numeric(predatorsAbw$Year)

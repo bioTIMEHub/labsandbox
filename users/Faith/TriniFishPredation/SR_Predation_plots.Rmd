@@ -1,0 +1,140 @@
+---
+title: "Richness predation level relationship"
+author: "Faith Jones"
+date: "9 August 2017"
+output: html_document
+---
+Here i am plotting the relationship between the species richness and a sites agianst
+the predation level at that site. Predation level is either quantified in terns 
+of abundance or biomass.The definition of predation in this case is the narrow 
+definition. 
+
+```{r, include=FALSE}
+setwd("C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\FishPredation\\Data")
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(lme4)
+library(lsmeans)
+library(pbkrtest)
+
+#preparing data 
+
+fishDataAll <- read.csv("Fish data June 2017.csv")
+head(fishDataAll)
+str(fishDataAll)
+
+
+selectMonths <- c("07", "08")# i am selecting out these months because then i can use the last timepoint 
+
+
+#select data from only the July and Auguest, and remove first year 
+SelectData <- fishDataAll %>% 
+	separate(date, c("Day", "Month", "Year"), sep = "/") %>%
+	filter(Year != 2010)%>%
+	filter(Month %in% selectMonths)
+
+fishData <- data.frame(SelectData)
+
+#calculate biomass
+fishData$TotBiomass <- (fishData$numbercaught + fishData$numberseen)* fishData$weight
+
+#calculating percentage abundance
+TotBioSite<- fishData %>% 
+	group_by(site, Year) %>%
+	summarise(BiomasSiteSum = sum(TotBiomass, na.rm=TRUE))
+
+siteBiomass <- data.frame(TotBioSite)
+
+#calculate overall abundance
+fishData$AbundanceAll <- fishData$numbercaught + fishData$numberseen
+
+#calculating species richness for each site 
+
+SR <- fishData %>%
+  group_by(site)%>%
+  summarise(SpeciesRichness = n_distinct(species))
+
+Richness <- data.frame(SR)
+
+fishDataSR <- merge(fishData, Richness, by = "site")
+
+
+```
+
+#getting biomass predation pressure 
+
+```{r}
+
+#sum biomass per site and year
+predatorsBioN <- fishData %>% 
+	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata") %>%
+	group_by(site, Year) %>%
+	summarise(BiomassSum = sum(TotBiomass))
+
+predatorsBio <- data.frame(predatorsBioN)
+predatorsBio$Year <- as.numeric(predatorsBio$Year)
+siteBiomass$Year <- as.numeric(siteBiomass$Year)
+
+FishDataTot <- merge(siteBiomass, predatorsBio, by = c("site" ,"Year"),all=TRUE) # this makes sure i 
+#know what years had no predators recoreded in 
+head(FishDataTot)
+FishDataTot$BiomassSum[is.na(FishDataTot$BiomassSum)] <- 0
+
+```
+plotting biomass
+
+```{r}
+
+meanBiomass <- aggregate(FishDataTot$BiomassSum, list(FishDataTot$site), mean)
+names(meanBiomass) <- c("site", "bioPred")
+
+FishDataBio <- merge(meanBiomass, Richness, by = "site")
+
+biomassPlot <- ggplot(aes(x = SpeciesRichness,y = bioPred), data = FishDataBio)
+biomassPlot + geom_point() +
+	labs(x = "Year", y = "Predator biomass (kg)")+
+  theme_classic()
+
+
+```
+
+
+#getting Abundance predation pressure 
+
+```{r}
+
+predatorsAbN <- fishData %>% 
+	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata") %>%
+	group_by(site, Year) %>%
+	summarise(AbundanceSum = sum(AbundanceAll))
+
+predatorsAb <- data.frame(predatorsAbN)
+predatorsAb$Year <- as.numeric(predatorsAb$Year)
+
+#add the total site biomass data, just to i can identify sites with no predators 
+FishDataTotAb <- merge(siteBiomass, predatorsAb, by = c("site" ,"Year"),all=TRUE) # this makes sure i 
+#know what years had no predators recoreded in 
+FishDataTotAb$AbundanceSum[is.na(FishDataTotAb$AbundanceSum)] <- 0
+FishDataTotAb$Year <- as.numeric(FishDataTotAb$Year)
+
+
+```
+
+plotting Abundance
+
+```{r}
+
+meanAb <- aggregate(FishDataTotAb$AbundanceSum, list(FishDataTotAb$site), mean)
+names(meanAb) <- c("site", "abPred")
+
+FishDataAb <- merge(meanAb , Richness, by = "site")
+
+AbundancePlot <- ggplot(aes(x = SpeciesRichness,y = abPred), data = FishDataAb)
+AbundancePlot + geom_point() +
+  theme_classic() +
+	labs(x = "Year", y = "Predator Abundance")
+
+
+```
