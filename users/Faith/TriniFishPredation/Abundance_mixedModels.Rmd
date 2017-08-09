@@ -79,6 +79,18 @@ FishDataTotAb$logAb <- log2(FishDataTotAb$AbundanceSum + 1)
 
 ```
 
+Here is the plot showing trendlines for each sites, using the linear model
+part of ggplot
+
+```{r}
+NarrowAdundance <- ggplot(aes(x = Year, y = logAb, colour = site),data = FishDataTotAb)
+NarrowAdundance + 
+  geom_smooth(se = FALSE, method = "lm")+ 
+	theme_classic()+
+	labs(y = "Log Predator Abundance")
+
+```
+
 Here is the raw plot of predator biomass agaist time, and the plot of log2 biomass
 against time. There is a lot of variability.
 ```{r}
@@ -144,9 +156,21 @@ FishDataTotAbm$meanCentredYear <-  FishDataTotAbm$Year - FishDataTotAbm$meanYear
 FishDataTotAbm$logAb <- log2(FishDataTotAbm$AbundanceSum + 1)
 
 ```
+Here is the plot showing trendlines for each sites, using the linear model
+part of ggplot
+
+```{r}
+MiddleAdundance <- ggplot(aes(x = Year, y = logAb, colour = site),data = FishDataTotAbm)
+MiddleAdundance + 
+  geom_smooth(se = FALSE, method = "lm")+ 
+	theme_classic()+
+	labs(y = "Log Predator Abundance")
+
+```
 
 Here is the raw plot of predator biomass agaist time, and the plot of log2 biomass
 against time. There is a lot of variability.
+
 ```{r}
 
 AbPlotm <- ggplot(FishDataTotAbm, aes(x = Year, y = AbundanceSum, col = site, group = site))
@@ -214,6 +238,17 @@ FishDataTotAbw$logAb <- log2(FishDataTotAbw$AbundanceSum + 1)
 
 ```
 
+Here is the plot showing trendlines for each sites, using the linear model
+part of ggplot
+
+```{r}
+BroadAdundance <- ggplot(aes(x = Year, y = logAb, colour = site),data = FishDataTotAbw)
+BroadAdundance + 
+  geom_smooth(se = FALSE, method = "lm")+ 
+	theme_classic()+
+	labs(y = "Log Predator Abundance")
+
+```
 Here is the raw plot of predator biomass agaist time, and the plot of log2 biomass
 against time. There is a lot of variability.
 ```{r}

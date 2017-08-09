@@ -80,6 +80,22 @@ FishDataTot$LogBiomass <- log2(FishDataTot$BiomassSum + 1)
 
 ```
 
+Here is the plot showing trendlines for each sites, using the linear model
+part of ggplot
+
+```{r}
+
+#plot slopes of each sites using Lm
+
+NarrowBiomass <- ggplot(aes(x = Year, y = LogBiomass, colour = site),data = FishDataTot)
+NarrowBiomass + 
+  geom_smooth(se = FALSE, method = "lm")+ 
+	theme_classic()+
+	labs(y = "Log Predator Biomass (kg)")
+  
+
+```
+
 Here is the raw plot of predator biomass agaist time, and the plot of log2 biomass
 against time. There is a lot of variability.
 ```{r}
@@ -141,6 +157,20 @@ FishDataTotm$meanYear <- meanYear[1,]
 FishDataTotm$meanCentredYear <-  FishDataTotm$Year - FishDataTotm$meanYear	
 
 FishDataTotm$LogBiomass <- log2(FishDataTotm$BiomassSum + 1)
+```
+
+Here is the plot showing trendlines for each sites, using the linear model
+part of ggplot
+
+```{r}
+
+#plot slopes not from the mixed model
+
+NarrowBiomass <- ggplot(aes(x = Year, y = LogBiomass, colour = site),data = FishDataTotm)
+NarrowBiomass + 
+  geom_smooth(se = FALSE, method = "lm")+ 
+	theme_classic()+
+	labs(y = "Log Predator Biomass (kg)")
 ```
 
 Here is the raw plot of predator biomass agaist time, and the plot of log2 biomass
@@ -208,10 +238,25 @@ FishDataTotw$meanYear <- meanYear[1,]
 FishDataTotw$meanCentredYear <-  FishDataTotw$Year - FishDataTotw$meanYear	
 
 FishDataTotw$LogBiomass <- log2(FishDataTotw$BiomassSum + 1)
+
+
+```
+
+Here is the plot showing trendlines for each sites, using the linear model
+part of ggplot
+
+```{r}
+NarrowBiomass <- ggplot(aes(x = Year, y = LogBiomass, colour = site),data = FishDataTotw)
+NarrowBiomass + 
+  geom_smooth(se = FALSE, method = "lm")+ 
+	theme_classic()+
+	labs(y = "Log Predator Biomass (kg)")
+
 ```
 
 Here is the raw plot of predator biomass agaist time, and the plot of log2 biomass
 against time, for middel predation. There is a lot of variability.
+
 ```{r}
 BioPlotw <- ggplot(FishDataTotw, aes(x = Year, y = BiomassSum, col = site, group = site))
 BioPlotw + geom_point() +
