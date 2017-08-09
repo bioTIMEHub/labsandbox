@@ -152,11 +152,11 @@ Sites are listed in decending order of mean predator pressure.
 
 ```{r}
 
-Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\Biomass_tangle.png",
+Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\Adundance_tangle.png",
       type="png",
       units="in", 
-      width=9,
-      height=4, 
+      width=8,
+      height=6,
       pointsize=12,
       dpi=100)
 
@@ -172,9 +172,9 @@ text(x = 54, y = orderNMW$predOrderM, labels = orderNMW$Group.1)
 text(x = 30, y = orderNMW$predOrderN, labels = orderNMW$Group.1)
 text(x = 78, y = orderNMW$predOrderW, labels = orderNMW$Group.1)
 
-text(x = 30, y = 16.75, labels = "Narrow", cex = 1.25)
-text(x = 54, y = 16.75, labels = "Intermediate", cex = 1.25)
-text(x = 78, y = 16.75, labels = "Broad", cex = 1.25)
+text(x = 30, y = 17, labels = "Narrow", cex = 1.5)
+text(x = 54, y = 17, labels = "Intermediate", cex = 1.5)
+text(x = 78, y = 17, labels = "Broad", cex = 1.5)
 
 dev.off()
 
