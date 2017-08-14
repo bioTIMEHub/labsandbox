@@ -35,7 +35,7 @@ group12 <- c("Hoplias malabaricus", "Crenicichla frenata", "Gymnotus carapo", "A
 #select data from only the July and Auguest, and remove first year 
 SelectData <- fishDataAll %>% 
 	separate(date, c("Day", "Month", "Year"), sep = "/") %>%
-	filter(Year != 2010)%>%
+	filter(Year != 2010) %>%
 	filter(Month %in% selectMonths)
 
 fishData <- data.frame(SelectData)
