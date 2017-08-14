@@ -15,6 +15,7 @@ library(tidyr)
 library(ggplot2)
 library(lme4)
 library(Cairo)
+library(RColorBrewer) 
 
 
 #preparing data 
@@ -141,13 +142,15 @@ Wide (group 2 and 3 species), Middle (group2) and Narrow(Hoplias and Crenicichla
 Sites are listed in decending order of mean predator pressure.
 
 ```{r}
-Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\Adundance_tangle.png",
-      type="png",
-      units="in", 
-      width=8,
-      height=6,
-      pointsize=12,
-      dpi=100)
+#Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for #Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\Adundance_tangle.png",
+#      type="png",
+#      units="in", 
+#      width=8,
+# #     height=6,
+#      pointsize=12,
+ #     dpi=100)
+
+getPalette <-  colorRampPalette(c("blue", "red"))
 
 plotSetup <- data.frame(cbind(c(1:17),c(20:87))) # data to plot onto emptyp plot
 plot(x = plotSetup$X2, y = plotSetup$X1, col="white", axes=FALSE , ylab = " ", xlab = "  ")

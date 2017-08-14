@@ -20,6 +20,7 @@ library(ggplot2)
 library(lme4)
 library(lsmeans)
 library(pbkrtest)
+library(RColorBrewer) 
 
 #preparing data 
 
@@ -86,11 +87,28 @@ Here is the plot showing trendlines for each sites, using the linear model
 part of ggplot
 
 ```{r}
-NarrowAdundance <- ggplot(aes(x = Year, y = logAb, colour = site),data = FishDataTotAb)
+
+head(FishDataTotAb)
+predOrder <- data.frame(FishDataTotAb%>% #det the oder of which sites are highest predation for plotting 
+  group_by(site) %>%
+  summarise(meanAb = mean(AbundanceSum)) %>%
+  arrange(meanAb)%>%
+  mutate(orderAb = c(1:16)))
+
+plotNAbData <- merge(FishDataTotAb, predOrder, by = "site")
+
+plotNAbData <- plotNAbData[order(plotNAbData$orderAb),]
+plotNAbData$reoderedSite <- reorder(plotNAbData$site, plotNAbData$orderAb)
+
+getPalette <-  colorRampPalette(c("blue", "red"))
+getPalette(16)
+
+NarrowAdundance <- ggplot(aes(x = Year, y = logAb, colour = reoderedSite ),data = plotNAbData)
 NarrowAdundance + 
   geom_smooth(se = FALSE, method = "lm")+ 
 	theme_classic()+
-	labs(y = "Log Predator Abundance")
+	labs(y = "Log Predator Abundance")   + 
+  scale_colour_manual(values = getPalette(16))
 
 ```
 
