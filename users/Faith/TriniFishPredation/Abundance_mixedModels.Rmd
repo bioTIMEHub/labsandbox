@@ -157,7 +157,7 @@ predatorsAbNm <- fishData %>%
 	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata" | 
 		species == "Gymnotus carapo"| species ==  "Rivulus hartii") %>%
 	group_by(site, Year) %>%
-	summarise(AbundanceSum = sum(AbundanceAll))
+	summarise(AbundanceSum = sum(AbundanceAll)) 
 
 predatorsAbm <- data.frame(predatorsAbNm)
 predatorsAbm$Year <- as.numeric(predatorsAbm$Year)
@@ -181,11 +181,27 @@ Here is the plot showing trendlines for each sites, using the linear model
 part of ggplot
 
 ```{r}
-MiddleAdundance <- ggplot(aes(x = Year, y = logAb, colour = site),data = FishDataTotAbm)
+
+predOrderm <- data.frame(FishDataTotAbm %>% #det the oder of which sites are highest predation for plotting 
+  group_by(site) %>%
+  summarise(meanAb = mean(AbundanceSum)) %>%
+  arrange(meanAb) %>%
+  mutate(orderAb = c(1:16)))
+
+plotNAbDatam <- merge(FishDataTotAbm, predOrderm, by = "site")
+
+plotNAbDatam <- plotNAbDatam[order(plotNAbDatam$orderAb),]
+plotNAbDatam$reoderedSite <- reorder(plotNAbDatam$site, plotNAbDatam$orderAb)
+
+getPalette <-  colorRampPalette(c("blue", "red"))
+getPalette(16)
+
+MiddleAdundance <- ggplot(aes(x = Year, y = logAb, colour = reoderedSite),data = plotNAbDatam)
 MiddleAdundance + 
-  geom_smooth(se = FALSE, method = "lm")+ 
+  geom_smooth(se = FALSE, method = "lm") + 
 	theme_classic()+
-	labs(y = "Log Predator Abundance")
+	labs(y = "Log Predator Abundance") + 
+  scale_colour_manual(values = getPalette(16))
 
 ```
 
@@ -263,12 +279,26 @@ Here is the plot showing trendlines for each sites, using the linear model
 part of ggplot
 
 ```{r}
-BroadAdundance <- ggplot(aes(x = Year, y = logAb, colour = site),data = FishDataTotAbw)
-BroadAdundance + 
-  geom_smooth(se = FALSE, method = "lm")+ 
-	theme_classic()+
-	labs(y = "Log Predator Abundance")
+predOrderb <- data.frame(FishDataTotAbw %>% #det the oder of which sites are highest predation for plotting 
+  group_by(site) %>%
+  summarise(meanAb = mean(AbundanceSum)) %>%
+  arrange(meanAb) %>%
+  mutate(orderAb = c(1:16)))
 
+plotNAbDataw <- merge(FishDataTotAbw, predOrderb, by = "site")
+
+plotNAbDataw <- plotNAbDataw[order(plotNAbDataw$orderAb),]
+plotNAbDataw$reoderedSite <- reorder(plotNAbDataw$site, plotNAbDataw$orderAb)
+
+getPalette <-  colorRampPalette(c("blue", "red"))
+getPalette(16)
+
+MiddleAdundance <- ggplot(aes(x = Year, y = logAb, colour = reoderedSite),data = plotNAbDataw)
+MiddleAdundance + 
+  geom_smooth(se = FALSE, method = "lm") + 
+	theme_classic()+
+	labs(y = "Log Predator Abundance") + 
+  scale_colour_manual(values = getPalette(16))
 ```
 Here is the raw plot of predator biomass agaist time, and the plot of log2 biomass
 against time. There is a lot of variability.

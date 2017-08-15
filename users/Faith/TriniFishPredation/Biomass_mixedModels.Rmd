@@ -120,6 +120,34 @@ m3.plotb + geom_blank() +
 
 ```
 
+below is the plot not suing the mixed model results. It sies an lm function, and 
+colours lines based on mean predation ranking 
+
+```{r}
+head(FishDataTot)
+predOrder <- data.frame(FishDataTot %>% #get the order of which sites are highest predation for plotting 
+  group_by(site) %>%
+  summarise(meanbio = mean(BiomassSum)) %>%
+  arrange(meanbio)%>%
+  mutate(orderbio = c(1:16)))
+
+plotNBioData <- merge(FishDataTot, predOrder, by = "site")
+
+plotNBioData  <- plotNBioData[order(plotNBioData$orderbio),]
+plotNBioData$reoderedSite <- reorder(plotNBioData$site, plotNBioData$orderbio)
+
+getPalette <-  colorRampPalette(c("blue", "red"))
+getPalette(16)
+
+NarrowAdundance <- ggplot(aes(x = Year, y = LogBiomass, colour = reoderedSite ),data = plotNBioData)
+NarrowAdundance + 
+  geom_smooth(se = FALSE, method = "lm")+ 
+	theme_classic()+
+	labs(y = "Log Predator Biomass")   + 
+  scale_colour_manual(values = getPalette(16))
+
+```
+  
 #Middle level predation definition 
 
 ```{r, include=FALSE}
@@ -184,6 +212,32 @@ m3.plotbm + geom_blank() +
 
 ```
 
+below is the plot not suing the mixed model results. It sies an lm function, and 
+colours lines based on mean predation ranking 
+```{r}
+head(FishDataTot)
+predOrderm <- data.frame(FishDataTotm %>% #get the order of which sites are highest predation for plotting 
+  group_by(site) %>%
+  summarise(meanbio = mean(BiomassSum)) %>%
+  arrange(meanbio)%>%
+  mutate(orderbio = c(1:16)))
+
+plotNBioDatam <- merge(FishDataTotm, predOrderm, by = "site")
+
+plotNBioDatam  <- plotNBioDatam[order(plotNBioDatam$orderbio),]
+plotNBioDatam$reoderedSite <- reorder(plotNBioDatam$site, plotNBioDatam$orderbio)
+
+getPalette <-  colorRampPalette(c("blue", "red"))
+getPalette(16)
+
+NarrowAdundance <- ggplot(aes(x = Year, y = LogBiomass, colour = reoderedSite ),data = plotNBioDatam)
+NarrowAdundance + 
+  geom_smooth(se = FALSE, method = "lm")+ 
+	theme_classic()+
+	labs(y = "Log Predator Biomass")   + 
+  scale_colour_manual(values = getPalette(16))
+
+```
 #Wide level predation definition 
 
 ```{r, include=FALSE}
@@ -249,3 +303,28 @@ m3.plotbm + geom_blank() +
 	labs(title="The log biomass change of Group 2", y = "Log Predator Biomass (kg)")
 
 ```
+
+below is the plot not suing the mixed model results. It sies an lm function, and 
+colours lines based on mean predation ranking 
+```{r}
+head(FishDataTot)
+predOrderw <- data.frame(FishDataTotw %>% #get the order of which sites are highest predation for plotting 
+  group_by(site) %>%
+  summarise(meanbio = mean(BiomassSum)) %>%
+  arrange(meanbio)%>%
+  mutate(orderbio = c(1:16)))
+
+plotNBioDataw <- merge(FishDataTotw, predOrderw, by = "site")
+
+plotNBioDataw <- plotNBioDataw[order(plotNBioDataw$orderbio),]
+plotNBioDataw$reoderedSite <- reorder(plotNBioDataw$site, plotNBioDataw$orderbio)
+
+getPalette <-  colorRampPalette(c("blue", "red"))
+getPalette(16)
+
+NarrowAdundance <- ggplot(aes(x = Year, y = LogBiomass, colour = reoderedSite ),data = plotNBioDataw)
+NarrowAdundance + 
+  geom_smooth(se = FALSE, method = "lm")+ 
+	theme_classic()+
+	labs(y = "Log Predator Biomass")   + 
+  scale_colour_manual(values = getPalette(16))
