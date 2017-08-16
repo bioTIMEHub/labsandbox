@@ -147,28 +147,28 @@ bothNarrow <- merge(orderNarrowb, orderNarrowa, by = "Group.1")
 
 ```{R}
 Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\narrowAB_tangle.png",
-      type="png",
+     type="png",
       units="in", 
       width=8,
       height=6,
-      pointsize=12,
-      dpi=100)
+     pointsize=12,
+     dpi=100)
 
-plotSetup <- data.frame(cbind(c(1:17),c(20:87))) # data to plot onto emptyp plot
+plotSetup <- data.frame(cbind(c(1:17),c(20:60))) # data to plot onto emptyp plot
 plot(x = plotSetup$X2, y = plotSetup$X1, col="white", axes=FALSE , ylab = " ", xlab = "  ")
-
+par(bg = 'white')
 #plot arrows
-arrows(x0 = 36, y0 = bothNarrow$predOrderNb, x1 = 48, y1 = bothNarrow$predOrderNa, length = 0.001)
+arrows(x0 = 35, y0 = bothNarrow$predOrderNb, x1 = 49, y1 = bothNarrow$predOrderNa, length = 0.001)
 
 
 #plotting text 
 text(x = 54, y = bothNarrow$predOrderNa, labels = bothNarrow$Group.1)
-text(x = 30, y = bothNarrow$predOrderNb, labels = orderNMW$Group.1)
+text(x = 30, y = bothNarrow$predOrderNb, labels = bothNarrow$Group.1)
 
 
 text(x = 30, y = 17, labels = "Narrow", cex = 1.5)
 text(x = 54, y = 17, labels = "Intermediate", cex = 1.5)
-text(x = 78, y = 17, labels = "Broad", cex = 1.5)
+
 
 dev.off()
 
