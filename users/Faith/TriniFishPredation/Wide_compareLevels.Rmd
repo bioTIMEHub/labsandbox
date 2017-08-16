@@ -159,15 +159,15 @@ Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\
       pointsize=12,
       dpi=100)
 plotSetup <- data.frame(cbind(c(1:17),c(20:60))) # data to plot onto emptyp plot
-plot(x = plotSetup$X2, y = plotSetup$X1, col="white", axes=FALSE , ylab = " ", xlab = "  ")
+plot(x = plotSetup$X2, y = plotSetup$X1, col="white", axes=FALSE , ylab = " ", xlab = "  ", type = "n")
 
 #plot arrows
-arrows(x0 = 35, y0 = WideBoth$predOrderNb, x1 = 49, y1 = WideBoth$predOrderNa, length = 0.001)
+arrows(x0 = 33, y0 = WideBoth$predOrderNb, x1 = 51, y1 = WideBoth$predOrderNa, length = 0.001)
 
 
 #plotting text 
-text(x = 54, y = WideBoth$predOrderNa, labels = WideBoth$Group.1)
-text(x = 30, y = WideBoth$predOrderNb, labels = WideBoth$Group.1)
+text(x = 52, y = WideBoth$predOrderNa, labels = WideBoth$Group.1, adj = c(0,NA))
+text(x = 32, y = WideBoth$predOrderNb, labels = WideBoth$Group.1, adj = c(1,NA))
 
 
 text(x = 30, y = 17, labels = "Biomass", cex = 1.5)
