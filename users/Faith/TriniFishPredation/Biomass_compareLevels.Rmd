@@ -152,30 +152,30 @@ Sites are listed in decending order of mean predator pressure.
 
 ```{r}
 
-Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\Adundance_tangle.png",
+Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\Biomass_tangle.png",
       type="png",
       units="in", 
-      width=8,
+      width=10,
       height=6,
       pointsize=12,
       dpi=100)
 
-plotSetup <- data.frame(cbind(c(1:17),c(20:87))) # data to plot onto emptyp plot
+plotSetup <- data.frame(cbind(c(1:17),c(20:110))) # data to plot onto emptyp plot
 plot(x = plotSetup$X2, y = plotSetup$X1, col="white", axes=FALSE , ylab = " ", xlab = "  ")
 
 #plot arrows
-arrows(x0 = 36, y0 = orderNMW$predOrderN, x1 = 48, y1 = orderNMW$predOrderM, length = 0.001)
-arrows(x0 = 60, y0 = orderNMW$predOrderM, x1 = 72, y1 = orderNMW$predOrderW, length = 0.001)
+arrows(x0 = 36, y0 = orderNMW$predOrderN, x1 = 56, y1 = orderNMW$predOrderM, length = 0.001)
+arrows(x0 = 74, y0 = orderNMW$predOrderM, x1 = 94, y1 = orderNMW$predOrderW, length = 0.001)
 
 
 #plotting text 
-text(x = 54, y = orderNMW$predOrderM, labels = orderNMW$Group.1)
-text(x = 30, y = orderNMW$predOrderN, labels = orderNMW$Group.1)
-text(x = 78, y = orderNMW$predOrderW, labels = orderNMW$Group.1)
+text(x = 34, y = orderNMW$predOrderN, labels = orderNMW$Group.1, adj = c(1,NA))
+text(x = 65, y = orderNMW$predOrderM, labels = orderNMW$Group.1)
+text(x = 95, y = orderNMW$predOrderW, labels = orderNMW$Group.1, adj = c(0,NA))
 
 text(x = 30, y = 17, labels = "Narrow", cex = 1.5)
-text(x = 54, y = 17, labels = "Intermediate", cex = 1.5)
-text(x = 78, y = 17, labels = "Broad", cex = 1.5)
+text(x = 64, y = 17, labels = "Intermediate", cex = 1.5)
+text(x = 100, y = 17, labels = "Broad", cex = 1.5)
 
 dev.off()
 
