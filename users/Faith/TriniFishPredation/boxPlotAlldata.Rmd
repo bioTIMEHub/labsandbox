@@ -14,6 +14,8 @@ value of abundance is reflected in the spread of data each year.
 
 setwd("C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation")
 library(ggplot2)
+library(dplyr)
+library(tidyr)
 
 #preparing data 
 
@@ -89,7 +91,7 @@ predatorAllSC <- merge(predatorAll, siteCodes, by.x = "site", by.y = "siteNames"
 
 #calculate plotting order for biomass data 
 
-x$name <- factor(x$name, levels = x$name[order(x$val)])
+
 
 ```
 #box plots of abundance
