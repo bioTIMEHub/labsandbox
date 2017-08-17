@@ -70,7 +70,7 @@ FishDataTot$BiomassSum[is.na(FishDataTot$BiomassSum)] <- 0
 
 FishDataTot$PropMass <- FishDataTot$BiomassSum / FishDataTot$BiomasSiteSum
 
-Narrow <- aggregate(FishDataTot$PropMass, list(FishDataTot$site), mean, na.rm=TRUE)
+Narrow <- aggregate(FishDataTot$BiomassSum, list(FishDataTot$site), mean, na.rm=TRUE)
 
 orderNarrow <- Narrow[order(Narrow$x),]
 head(orderNarrow)
@@ -161,7 +161,7 @@ Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\
       dpi=100)
 
 plotSetup <- data.frame(cbind(c(1:17),c(20:110))) # data to plot onto emptyp plot
-plot(x = plotSetup$X2, y = plotSetup$X1, col="white", axes=FALSE , ylab = " ", xlab = "  ")
+plot(x = plotSetup$X2, y = plotSetup$X1, col="white", axes=FALSE , ylab = " ", xlab = "  ", type = "n")
 
 #plot arrows
 arrows(x0 = 36, y0 = orderNMW$predOrderN, x1 = 56, y1 = orderNMW$predOrderM, length = 0.001)
@@ -191,7 +191,10 @@ rownames(orderNMW) <- orderNMW$Group.1
 corOrderNMW <- orderNMW[,c(2, 4, 6)] 
 names(corOrderNMW ) <- c("Narrow", "Middle", "Wide")
 cor(corOrderNMW, method="spearman")
+cor.test(corOrderNMW$Narrow, corOrderNMW$Middle, method="spearman")
+cor.test(corOrderNMW$Narrow, corOrderNMW$Wide, method="spearman")
+cor.test(corOrderNMW$Wide, corOrderNMW$Middle, method="spearman")
 ```
 
 Conclusion: It matters quite a bit what definition of "high predation site" you 
-use when 
+use 

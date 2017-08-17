@@ -130,7 +130,7 @@ FishDataTot$BiomassSum[is.na(FishDataTot$BiomassSum)] <- 0
 
 FishDataTot$PropMass <- FishDataTot$BiomassSum / FishDataTot$BiomasSiteSum
 
-Narrowb <- aggregate(FishDataTot$PropMass, list(FishDataTot$site), mean, na.rm=TRUE)
+Narrowb <- aggregate(FishDataTot$BiomassSum, list(FishDataTot$site), mean, na.rm=TRUE)
 
 orderNarrowb <- Narrowb[order(Narrowb$x),]
 head(orderNarrowb)
@@ -181,4 +181,5 @@ rownames(bothNarrow) <-  bothNarrow$Group.1
 corOrderNarrow <-  bothNarrow[,c(2, 4)] 
 names(corOrderNarrow ) <-  c("Biomass", "Abundance")
 cor(corOrderNarrow , method="spearman")
+cor.test(corOrderNarrow$Biomass,corOrderNarrow$Abundance, method="spearman")
 ```

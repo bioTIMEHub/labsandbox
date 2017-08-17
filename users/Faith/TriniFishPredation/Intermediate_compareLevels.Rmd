@@ -1,5 +1,5 @@
 ---
-title: "Narrow Predation Tanglegram"
+title: "Intermediate Predation Tanglegram"
 author: "Faith Jones"
 date: "8 August 2017"
 output: html_document
@@ -134,7 +134,7 @@ FishDataTotI$BiomassSum[is.na(FishDataTotI$BiomassSum)] <- 0
 
 FishDataTotI$PropMass <- FishDataTotI$BiomassSum / FishDataTotI$BiomasSiteSum
 
-NarrowIb <- aggregate(FishDataTotI$PropMass, list(FishDataTotI$site), mean, na.rm=TRUE)
+NarrowIb <- aggregate(FishDataTotI$BiomassSum, list(FishDataTotI$site), mean, na.rm=TRUE)
 
 orderNarrowIb <- NarrowIb [order(NarrowIb$x),]
 head(orderNarrowIb)
@@ -184,4 +184,5 @@ rownames(bothIntermediate) <-  bothIntermediate$Group.1
 corOrderInter <-  bothIntermediate[,c(2, 4)] 
 names(corOrderInter) <-  c("Biomass", "Abundance")
 cor(corOrderInter, method="spearman")
+cor.test(corOrderInter$Biomass, corOrderInter$Abundance, method="spearman")
 ```

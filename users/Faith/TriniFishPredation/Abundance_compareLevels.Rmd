@@ -182,4 +182,7 @@ rownames(orderNMW) <- orderNMW$Group.1
 corOrderNMW <- orderNMW[,c(2, 4, 6)] 
 names(corOrderNMW ) <- c("Narrow", "Middle", "Wide")
 cor(corOrderNMW, method="spearman")
+cor.test(corOrderNMW$Narrow, corOrderNMW$Middle, method="spearman")
+cor.test(corOrderNMW$Narrow, corOrderNMW$Wide, method="spearman")
+cor.test(corOrderNMW$Wide, corOrderNMW$Middle, method="spearman")
 ```

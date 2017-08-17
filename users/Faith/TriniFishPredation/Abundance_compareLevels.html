@@ -166,6 +166,40 @@ cor(corOrderNMW, method=&quot;spearman&quot;)</code></pre>
 ## Narrow 1.0000000 0.0603385 0.1192053
 ## Middle 0.0603385 1.0000000 0.9588235
 ## Wide   0.1192053 0.9588235 1.0000000</code></pre>
+<pre class="r"><code>cor.test(corOrderNMW$Narrow, corOrderNMW$Middle, method=&quot;spearman&quot;)</code></pre>
+<pre><code>## Warning in cor.test.default(corOrderNMW$Narrow, corOrderNMW$Middle, method
+## = &quot;spearman&quot;): Cannot compute exact p-value with ties</code></pre>
+<pre><code>## 
+##  Spearman's rank correlation rho
+## 
+## data:  corOrderNMW$Narrow and corOrderNMW$Middle
+## S = 638.97, p-value = 0.8243
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##       rho 
+## 0.0603385</code></pre>
+<pre class="r"><code>cor.test(corOrderNMW$Narrow, corOrderNMW$Wide, method=&quot;spearman&quot;)</code></pre>
+<pre><code>## Warning in cor.test.default(corOrderNMW$Narrow, corOrderNMW$Wide, method =
+## &quot;spearman&quot;): Cannot compute exact p-value with ties</code></pre>
+<pre><code>## 
+##  Spearman's rank correlation rho
+## 
+## data:  corOrderNMW$Narrow and corOrderNMW$Wide
+## S = 598.94, p-value = 0.6601
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##       rho 
+## 0.1192053</code></pre>
+<pre class="r"><code>cor.test(corOrderNMW$Wide, corOrderNMW$Middle, method=&quot;spearman&quot;)</code></pre>
+<pre><code>## 
+##  Spearman's rank correlation rho
+## 
+## data:  corOrderNMW$Wide and corOrderNMW$Middle
+## S = 28, p-value &lt; 2.2e-16
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##       rho 
+## 0.9588235</code></pre>
 
 
 
