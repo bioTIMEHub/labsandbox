@@ -1,0 +1,113 @@
+---
+title: "Boxplot of predation abundance and biomass"
+author: "Faith Jones"
+date: "17 August 2017"
+output: html_document
+---
+
+this code is to combine all the data into one pannel plot showing how the median
+value of abundance is reflected in the spread of data each year. 
+
+```{r}
+###Making a plot of how high pressure predation sites are when measured in 
+#different levels of predation
+
+setwd("C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation")
+library(ggplot2)
+
+#preparing data 
+
+fishData <- read.csv("Fish data June 2017.csv")
+head(fishData)
+siteCodes <- read.csv("siteCodes.csv")
+
+unique(as.character(fishData$site))
+
+selectMonths <- c("07", "08")# i am selecting out these months because then i can use the last timepoint 
+
+group12 <- c("Hoplias malabaricus", "Crenicichla frenata", "Gymnotus carapo", "Anablepsoides hartii",
+			"Cichlasoma taenia", "Cichlasoma taenia", "Corynopoma riisei", "Roeboides dientonito", 
+			"Agonostomus monticola", "Rhamdia quelen", "andinoacara pulcher", "Hemigrammus unilineatus", "Rivulus hartii")
+
+
+#select data from only the July and Auguest, and remove first year 
+fishData2 <- data.frame(fishData %>% 
+	separate(date, c("Day", "Month", "Year"), sep = "/") %>%
+	filter(Year != 2010)%>%
+	filter(Month %in% selectMonths))
+
+fishData2$Year <- as.numeric(fishData2$Year)
+
+#calculate biomass
+fishData2$TotBiomass <- (fishData2$numbercaught + fishData2$numberseen)* fishData2$weight
+
+#calcuate abundance
+
+fishData2$TotAbundance <- fishData2$numbercaught + fishData2$numberseen
+
+#Narrow Predation data
+#-------------------------
+
+#sum biomass and abundance per site and year
+predatorsNarrow <- data.frame(fishData2 %>% 
+	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata") %>%
+	group_by(site, Year) %>%
+	summarise(BiomassSum = sum(TotBiomass), AbundanceSum = sum(TotAbundance), 
+	          Biomed = median(TotBiomass), AbMed= median(TotAbundance)) %>%
+  mutate(definition = "Narrow", LogBiomass = log2(BiomassSum), LogAbundance = log2(AbundanceSum + 1)))
+
+
+#Intermediate Predation Data
+#---------------------------------
+
+predatorsInt <- data.frame(fishData2 %>% 
+	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata" | 
+		species == "Gymnotus carapo" | species == "Rivulus hartii") %>%
+	group_by(site, Year) %>%
+	summarise(BiomassSum = sum(TotBiomass), AbundanceSum = sum(TotAbundance), 
+	          Biomed = median(TotBiomass), AbMed= median(TotAbundance)) %>%
+  mutate(definition = "Intermediate", LogBiomass = log2(BiomassSum), LogAbundance = log2(AbundanceSum + 1)))
+
+
+#Intermediate Predation Data
+#---------------------------------
+
+predatorsWide <- data.frame(fishData2 %>% 
+	filter(species %in% group12) %>%
+	group_by(site, Year) %>%
+	summarise(BiomassSum = sum(TotBiomass), AbundanceSum = sum(TotAbundance), 
+	          Biomed = median(TotBiomass), AbMed= median(TotAbundance)) %>%
+  mutate(definition = "Wide", LogBiomass = log2(BiomassSum), LogAbundance = log2(AbundanceSum + 1)))
+
+#put data together
+predatorAll <- data.frame(rbind(predatorsNarrow, predatorsInt, predatorsWide))
+predatorAll[is.na(predatorAll)] <- 0
+head(predatorAll)
+
+
+predatorAllSC <- merge(predatorAll, siteCodes, by.x = "site", by.y = "siteNames") #add new sites codes to the data 
+
+#calculate plotting order for biomass data 
+
+x$name <- factor(x$name, levels = x$name[order(x$val)])
+
+```
+#box plots of abundance
+
+
+```{r}
+
+BiomassPlot <- ggplot(data = predatorAllSC, aes(x = codes, y = LogBiomass))
+BiomassPlot + geom_boxplot() + 
+  facet_grid(.~ definition) + 
+  theme_classic()
+
+AbundancePlot <- ggplot(data = predatorAllSC, aes(x = codes, y = LogAbundance))
+AbundancePlot + geom_boxplot() + 
+  facet_grid(.~ definition) + 
+  theme_classic()
+
+```
+
+
+
