@@ -1,5 +1,5 @@
 ---
-title: "Narrow Predation Tanglegram"
+title: "Wide Predation Tanglegram"
 author: "Faith Jones"
 date: "8 August 2017"
 output: html_document
@@ -105,20 +105,20 @@ SelectData <- fishDataAll %>%
 fishData <- data.frame(SelectData)
 
 #calculate biomass
-fishData$TotBiomass <- (fishData$numbercaught + fishData$numberseen)* fishData$weight
+fishData$TotBiomass <- (fishData$numbercaught * fishData$weight) + (fishData$numberseen * fishData$weight)
 
 
 #calculating percentage biomass
 TotBioSite<- fishData %>% 
 	group_by(site, Year) %>%
-	summarise(BiomasSiteSum = sum(TotBiomass, na.rm=TRUE))
+	summarise(BiomasSiteSum = sum(TotBiomass, na.rm=TRUE)) # This is teh sum of all fish, not just predators 
 
 siteBiomass <- data.frame(TotBioSite)
 
 #Narrow Predation data
 #-------------------------
 
-#sum biomass per site and year
+#sum biomass per site and year of predators 
 predatorsBioN <- fishData %>% 
 	filter(species %in% group12) %>%
 	group_by(site, Year) %>%
@@ -135,7 +135,7 @@ FishDataTot$BiomassSum[is.na(FishDataTot$BiomassSum)] <- 0
 
 FishDataTot$PropMass <- FishDataTot$BiomassSum / FishDataTot$BiomasSiteSum
 
-Wideb <- aggregate(FishDataTot$PropMass, list(FishDataTot$site), mean, na.rm=TRUE)
+Wideb <- aggregate(FishDataTot$BiomassSum, list(FishDataTot$site), mean, na.rm=TRUE)
 
 orderWideb <- Wideb [order(Wideb $x),]
 head(orderWideb)
@@ -186,4 +186,5 @@ corOrderWide <- WideBoth[,c(2, 4)]
 names(corOrderWide) <- c("Biomass", "Abundance")
 print(corOrderWide)
 cor(corOrderWide, method="spearman")
+cor.test(corOrderWide$Biomass, corOrderWide$Abundance, method="spearman")
 ```
