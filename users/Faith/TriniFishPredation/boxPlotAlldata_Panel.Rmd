@@ -17,6 +17,9 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(Cairo)
+library(grid)
+library(gridExtra)
+
 
 #preparing data 
 
@@ -78,44 +81,44 @@ predatorsNarrowSC[is.na(predatorsNarrowSC)] <- 0
 predatorsNarrowSC$codes <- factor(as.character(predatorsNarrowSC$codes), 
                                   levels = predatorsNarrowSC$codes[order(predatorsNarrowSC$bioMed)])
 
-Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\NarrowBioBox.png",
-      type="png",
-       units="in", 
-      width=8,
-      height=6,
-      pointsize=12,
-      dpi=100)
+#Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\NarrowBioBox.png",
+#      type="png",
+#       units="in", 
+#      width=8,
+#      height=6,
+ #     pointsize=12,
+#      dpi=100)
 
 #plotting biomass
 narrowBiomass <- ggplot(data = predatorsNarrowSC, aes(x = codes, y = LogBiomass))
-narrowBiomass + geom_boxplot() + 
+NB <- narrowBiomass + geom_boxplot() + 
   theme_classic() + 
   labs(x = "Sites", y = "Log Predator Biomass") +
-  theme(text = element_text(size=19))
+  ggtitle("b")
 
-dev.off()
+#dev.off()
 
 #ordering the data by median abundance
 predatorsNarrowSCab <- predatorsNarrowSC # create a new dataframe to osder based on abundace values 
 predatorsNarrowSCab$codes <- factor(as.character(predatorsNarrowSCab$codes), 
                                   levels = predatorsNarrowSCab$codes[order(predatorsNarrowSCab$AbMed)])
 
-Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\NarrowAbBox.png",
-      type="png",
-      units="in", 
-      width=8,
-      height=6,
-      pointsize=12,
-      dpi=100)
+#Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\NarrowAbBox.png",
+#      type="png",
+#      units="in", 
+#      width=8,
+#      height=6,
+ #     pointsize=12,
+#      dpi=100)
 
 #plotting abundance
 narrowAbundance  <- ggplot(data = predatorsNarrowSCab, aes(x = codes, y = LogAbundance))
-narrowAbundance  + geom_boxplot() + 
+nA <- narrowAbundance  + geom_boxplot() + 
   theme_classic() + 
   labs(x = "Sites", y = "Log Predator Abundance")+
-  theme(text = element_text(size=19))
+  ggtitle("a")
 
-dev.off()
+#dev.off()
 
 ```
 
@@ -149,44 +152,44 @@ predatorIntSC[is.na(predatorIntSC)] <- 0
 predatorIntSC$codes <- factor(as.character(predatorIntSC$codes), 
                                   levels = predatorIntSC$codes[order(predatorIntSC$bioMed)])
 
-Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\InterBioBox.png",
-      type="png",
-      units="in", 
-      width=8,
-      height=6,
-      pointsize=12,
-      dpi=100)
+#Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\InterBioBox.png",
+ #     type="png",
+ #     units="in", 
+ #     width=8,
+ #     height=6,
+ #     pointsize=12,
+ #     dpi=100)
 
 #plotting biomass
 IntBiomass <- ggplot(data = predatorIntSC, aes(x = codes, y = LogBiomass))
-IntBiomass + geom_boxplot() + 
+IB <- IntBiomass + geom_boxplot() + 
   theme_classic() + 
-  labs(x = "Sites", y = "Log Predator Biomass")+
-  theme(text = element_text(size=19))
+  labs(x = "Sites", y = "Log Predator Biomass") +
+  ggtitle("d")
 
-dev.off()
+#dev.off()
 
 #ordering the data by median abundance
 predatorIntSCab <- predatorIntSC # create a new dataframe to osder based on abundace values 
 predatorIntSCab$codes <- factor(as.character(predatorIntSCab$codes), 
                                   levels = predatorIntSCab$codes[order(predatorIntSCab$AbMed)])
 
-Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\InterAbBox.png",
-      type="png",
-      units="in", 
-      width=8,
-      height=6,
-      pointsize=12,
-      dpi=100)
+#Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\InterAbBox.png",
+#      type="png",
+#      units="in", 
+#      width=8,
+#      height=6,
+#      pointsize=12,
+#      dpi=100)
 
 #plotting abundance
 IntAbundance  <- ggplot(data = predatorIntSCab, aes(x = codes, y = LogAbundance))
-IntAbundance  + geom_boxplot()+ 
+IA <- IntAbundance  + geom_boxplot()+ 
   theme_classic() + 
-  labs(x = "Sites", y = "Log Predator Abundance")+
-  theme(text = element_text(size=19))
+  labs(x = "Sites", y = "Log Predator Abundance") +
+  ggtitle("e")
 
-dev.off()
+#dev.off()
 
 ```
 
@@ -216,45 +219,65 @@ predatorWideSC[is.na(predatorWideSC)] <- 0
 predatorWideSC$codes <- factor(as.character(predatorWideSC$codes), 
                                   levels = predatorWideSC$codes[order(predatorWideSC$bioMed)])
 
-Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\WideBioBox.png",
-      type="png",
-      units="in", 
-      width=8,
-      height=6,
-      pointsize=12,
-      dpi=100)
+#Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\WideBioBox.png",
+#      type="png",
+#      units="in", 
+#      width=8,
+#      height=6,
+#      pointsize=12,
+#      dpi=100)
 
 #plotting biomass
 WideBiomass <- ggplot(data = predatorWideSC, aes(x = codes, y = LogBiomass))
-WideBiomass + geom_boxplot() + 
+WB <- WideBiomass + geom_boxplot() + 
   theme_classic() + 
-  labs(x = "Sites", y = "Log Predator Biomass")+
-  theme(text = element_text(size=19))
+  labs(x = "Sites", y = "Log Predator Biomass") +
+  ggtitle("g")
 
-dev.off()
+
+#dev.off()
 
 #ordering the data by median abundance
 predatorWideSCab <- predatorWideSC # create a new dataframe to osder based on abundace values 
 predatorWideSCab$codes <- factor(as.character(predatorWideSCab$codes), 
                                   levels = predatorWideSCab$codes[order(predatorWideSCab$AbMed)])
 
-Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\WideAbBox.png",
-      type="png",
-      units="in", 
-      width=8,
-      height=6,
-      pointsize=12,
-      dpi=100)
+#Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\WideAbBox.png",
+#      type="png",
+#      units="in", 
+#      width=8,
+#      height=6,
+#      pointsize=12,
+#      dpi=100)
 
 #plotting abundance
 WideAbundance <- ggplot(data = predatorIntSCab, aes(x = codes, y = LogAbundance))
-WideAbundance  + geom_boxplot()+ 
+WA <- WideAbundance  + geom_boxplot()+ 
   theme_classic() + 
-  labs(x = "Sites", y = "Log Predator Abundance")+
-  theme(text = element_text(size=19))
+  labs(x = "Sites", y = "Log Predator Abundance") +
+  ggtitle("f")
+
+
+#dev.off()
+
+```
+
+```{r}
+Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\BoxPannel.png",
+      type="png",
+      units="in", 
+      width=9,
+      height=13,
+      pointsize=12,
+      dpi=100)
+
+grid.arrange(nA, NB, IA, IB, WA, WB)
 
 dev.off()
 
 ```
+
+
+
 
 

@@ -168,17 +168,18 @@ plot(x = plotSetup$X2, y = plotSetup$X1, col="white", axes=FALSE , ylab = " ", x
 
 #plot arrows
 arrows(x0 = 36, y0 = orderNMW$predOrderN, x1 = 56, y1 = orderNMW$predOrderM, length = 0.001)
-arrows(x0 = 66, y0 = orderNMW$predOrderM, x1 = 86, y1 = orderNMW$predOrderW, length = 0.001)
+arrows(x0 = 64, y0 = orderNMW$predOrderM, x1 = 84, y1 = orderNMW$predOrderW, length = 0.001)
 
 
 #plotting text 
 text(x = 35, y = orderNMW$predOrderN, labels = orderNMW$codes, adj = c(1,NA))
-text(x = 61, y = orderNMW$predOrderM, labels = orderNMW$codes)
-text(x = 89, y = orderNMW$predOrderW, labels = orderNMW$codes, adj = c(0,NA))
+text(x = 60, y = orderNMW$predOrderM, labels = orderNMW$codes)
+text(x = 86, y = orderNMW$predOrderW, labels = orderNMW$codes, adj = c(0,NA))
 
 text(x = 32, y = 17, labels = "Narrow", cex = 1.5)
-text(x = 61, y = 17, labels = "Intermediate", cex = 1.5)
-text(x = 90, y = 17, labels = "Broad", cex = 1.5)
+text(x = 60, y = 17, labels = "Intermediate", cex = 1.5)
+text(x = 88, y = 17, labels = "Broad", cex = 1.5)
+
 
 dev.off()
 
