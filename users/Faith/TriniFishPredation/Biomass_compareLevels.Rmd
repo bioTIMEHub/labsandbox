@@ -8,7 +8,7 @@ output: html_document
 ###Making a plot of how high pressure predation sites are when measured in 
 #different levels of predation
 
-setwd("C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\FishPredation\\Data")
+setwd("C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation")
 
 library(dplyr)
 library(tidyr)
@@ -21,8 +21,9 @@ library(Cairo)
 
 fishDataAll <- read.csv("Fish data June 2017.csv")
 head(fishDataAll)
-str(fishDataAll)
-levels(fishDataAll$species)
+
+siteCodes <- read.csv("siteCodes.csv")
+
 selectMonths <- c("07", "08")# i am selecting out these months because then i can use the last timepoint 
 
 
@@ -142,7 +143,9 @@ orderWide$predOrderW <- c(1:nrow(orderWide))
 #-----------------------------
 
 orderNM <- merge(orderNarrow, orderMiddle, by = "Group.1")
-orderNMW <- merge(orderNM, orderWide, by = "Group.1")
+orderNMWc <- merge(orderNM, orderWide, by = "Group.1")
+orderNMW <- merge(orderNMWc, siteCodes, by.x = "Group.1", by.y = "siteNames")
+
 
 ```
 
@@ -155,27 +158,27 @@ Sites are listed in decending order of mean predator pressure.
 Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\Biomass_tangle.png",
       type="png",
       units="in", 
-      width=10,
+      width=9,
       height=6,
       pointsize=12,
       dpi=100)
 
-plotSetup <- data.frame(cbind(c(1:17),c(20:110))) # data to plot onto emptyp plot
+plotSetup <- data.frame(cbind(c(1:17),c(20:100))) # data to plot onto emptyp plot
 plot(x = plotSetup$X2, y = plotSetup$X1, col="white", axes=FALSE , ylab = " ", xlab = "  ", type = "n")
 
 #plot arrows
 arrows(x0 = 36, y0 = orderNMW$predOrderN, x1 = 56, y1 = orderNMW$predOrderM, length = 0.001)
-arrows(x0 = 74, y0 = orderNMW$predOrderM, x1 = 94, y1 = orderNMW$predOrderW, length = 0.001)
+arrows(x0 = 66, y0 = orderNMW$predOrderM, x1 = 86, y1 = orderNMW$predOrderW, length = 0.001)
 
 
 #plotting text 
-text(x = 34, y = orderNMW$predOrderN, labels = orderNMW$Group.1, adj = c(1,NA))
-text(x = 65, y = orderNMW$predOrderM, labels = orderNMW$Group.1)
-text(x = 95, y = orderNMW$predOrderW, labels = orderNMW$Group.1, adj = c(0,NA))
+text(x = 35, y = orderNMW$predOrderN, labels = orderNMW$codes, adj = c(1,NA))
+text(x = 61, y = orderNMW$predOrderM, labels = orderNMW$codes)
+text(x = 89, y = orderNMW$predOrderW, labels = orderNMW$codes, adj = c(0,NA))
 
-text(x = 30, y = 17, labels = "Narrow", cex = 1.5)
-text(x = 64, y = 17, labels = "Intermediate", cex = 1.5)
-text(x = 100, y = 17, labels = "Broad", cex = 1.5)
+text(x = 32, y = 17, labels = "Narrow", cex = 1.5)
+text(x = 61, y = 17, labels = "Intermediate", cex = 1.5)
+text(x = 90, y = 17, labels = "Broad", cex = 1.5)
 
 dev.off()
 

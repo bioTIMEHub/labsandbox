@@ -13,7 +13,7 @@ and Crenicichla frenata.
 ###Making a plot of how high pressure predation sites are when measured in 
 #different levels of predation ABUNDANCE
 
-setwd("C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\FishPredation\\Data")
+setwd("C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation")
 
 library(dplyr)
 library(tidyr)
@@ -26,8 +26,9 @@ library(Cairo)
 
 fishDataAll <- read.csv("Fish data June 2017.csv")
 head(fishDataAll)
-str(fishDataAll)
-levels(fishDataAll$species)
+
+siteCodes <- read.csv("siteCodes.csv")
+
 selectMonths <- c("07", "08")# i am selecting out these months because then i can use the last timepoint 
 
 #select data from only the July and Auguest, and remove first year 
@@ -141,7 +142,9 @@ orderNarrowb$predOrderNb <- c(1:nrow(orderNarrowb))
 
 ```{r, include=FALSE}
 
-bothNarrow <- merge(orderNarrowb, orderNarrowa, by = "Group.1")
+bothNarrowc <- merge(orderNarrowb, orderNarrowa, by = "Group.1")
+bothNarrow <- merge(bothNarrowc, siteCodes, by.x = "Group.1", by.y = "siteNames")
+
 
 ```
 
@@ -162,12 +165,12 @@ arrows(x0 = 33, y0 = bothNarrow$predOrderNa, x1 = 51, y1 = bothNarrow$predOrderN
 
 
 #plotting text 
-text(x = 52, y = bothNarrow$predOrderNb, labels = bothNarrow$Group.1, adj = c(0,NA))
-text(x = 32, y = bothNarrow$predOrderNa, labels = bothNarrow$Group.1, adj = c(1,NA))
+text(x = 52, y = bothNarrow$predOrderNb, labels = bothNarrow$codes, adj = c(0,NA))
+text(x = 32, y = bothNarrow$predOrderNa, labels = bothNarrow$codes, adj = c(1,NA))
 
 
-text(x = 30, y = 17, labels = "Abundance", cex = 1.5)
-text(x = 54, y = 17, labels = "Biomass", cex = 1.5)
+text(x = 31, y = 17, labels = "Abundance", cex = 1.5)
+text(x = 53, y = 17, labels = "Biomass", cex = 1.5)
 
 
 dev.off()
