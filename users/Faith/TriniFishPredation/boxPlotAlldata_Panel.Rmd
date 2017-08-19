@@ -93,8 +93,11 @@ predatorsNarrowSC$codes <- factor(as.character(predatorsNarrowSC$codes),
 narrowBiomass <- ggplot(data = predatorsNarrowSC, aes(x = codes, y = LogBiomass))
 NB <- narrowBiomass + geom_boxplot() + 
   theme_classic() + 
-  labs(x = "Sites", y = "Log Predator Biomass") +
-  ggtitle("b")
+  labs(x = "", y = "Log Predator Biomass") +
+  ggtitle("d")+ 
+  theme(plot.title = element_text(size=20), axis.text=element_text(size= 15), 
+        axis.text.x = element_text(angle = 90, vjust = 0.5),  axis.title=element_text(size = 17))
+
 
 #dev.off()
 
@@ -115,8 +118,11 @@ predatorsNarrowSCab$codes <- factor(as.character(predatorsNarrowSCab$codes),
 narrowAbundance  <- ggplot(data = predatorsNarrowSCab, aes(x = codes, y = LogAbundance))
 nA <- narrowAbundance  + geom_boxplot() + 
   theme_classic() + 
-  labs(x = "Sites", y = "Log Predator Abundance")+
-  ggtitle("a")
+  labs(x = "", y = "Log Predator Abundance") +
+  ggtitle("a")+ 
+  theme(plot.title = element_text(size=20), axis.text=element_text(size= 15), 
+        axis.text.x = element_text(angle = 90, vjust = 0.5),  axis.title=element_text(size = 17))
+
 
 #dev.off()
 
@@ -164,8 +170,11 @@ predatorIntSC$codes <- factor(as.character(predatorIntSC$codes),
 IntBiomass <- ggplot(data = predatorIntSC, aes(x = codes, y = LogBiomass))
 IB <- IntBiomass + geom_boxplot() + 
   theme_classic() + 
-  labs(x = "Sites", y = "Log Predator Biomass") +
-  ggtitle("d")
+  labs(x = "Sites", y = "") +
+  ggtitle("e")+ 
+  theme(plot.title = element_text(size=20), axis.text=element_text(size= 15), 
+        axis.text.x = element_text(angle = 90, vjust = 0.5))
+
 
 #dev.off()
 
@@ -186,8 +195,11 @@ predatorIntSCab$codes <- factor(as.character(predatorIntSCab$codes),
 IntAbundance  <- ggplot(data = predatorIntSCab, aes(x = codes, y = LogAbundance))
 IA <- IntAbundance  + geom_boxplot()+ 
   theme_classic() + 
-  labs(x = "Sites", y = "Log Predator Abundance") +
-  ggtitle("e")
+  labs(x = "", y = "") +
+  ggtitle("b")+ 
+  theme(plot.title = element_text(size=20), axis.text=element_text(size= 15), 
+        axis.text.x = element_text(angle = 90, vjust = 0.5))
+
 
 #dev.off()
 
@@ -231,8 +243,11 @@ predatorWideSC$codes <- factor(as.character(predatorWideSC$codes),
 WideBiomass <- ggplot(data = predatorWideSC, aes(x = codes, y = LogBiomass))
 WB <- WideBiomass + geom_boxplot() + 
   theme_classic() + 
-  labs(x = "Sites", y = "Log Predator Biomass") +
-  ggtitle("g")
+  labs(x = "", y = "") +
+  ggtitle("f")+ 
+  theme(plot.title = element_text(size=20), axis.text=element_text(size= 15), 
+        axis.text.x = element_text(angle = 90, vjust = 0.5))
+
 
 
 #dev.off()
@@ -251,11 +266,13 @@ predatorWideSCab$codes <- factor(as.character(predatorWideSCab$codes),
 #      dpi=100)
 
 #plotting abundance
-WideAbundance <- ggplot(data = predatorIntSCab, aes(x = codes, y = LogAbundance))
+WideAbundance <- ggplot(data = predatorWideSCab, aes(x = codes, y = LogAbundance))
 WA <- WideAbundance  + geom_boxplot()+ 
   theme_classic() + 
-  labs(x = "Sites", y = "Log Predator Abundance") +
-  ggtitle("f")
+  labs(x = "", y = "") +
+  ggtitle("c") + 
+  theme(plot.title = element_text(size=20), axis.text=element_text(size= 15), 
+        axis.text.x = element_text(angle = 90, vjust = 0.5))
 
 
 #dev.off()
@@ -266,12 +283,12 @@ WA <- WideAbundance  + geom_boxplot()+
 Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\BoxPannel.png",
       type="png",
       units="in", 
-      width=9,
-      height=13,
+      width=13,
+      height=10,
       pointsize=12,
       dpi=100)
 
-grid.arrange(nA, NB, IA, IB, WA, WB)
+grid.arrange(nA, IA, WA, NB, IB, WB, ncol=3)
 
 dev.off()
 
