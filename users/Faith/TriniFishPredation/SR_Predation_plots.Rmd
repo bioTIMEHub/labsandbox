@@ -18,6 +18,7 @@ library(ggplot2)
 library(lme4)
 library(lsmeans)
 library(pbkrtest)
+library(Cairo)
 
 #preparing data 
 
@@ -92,12 +93,50 @@ names(meanBiomass) <- c("site", "bioPred")
 
 FishDataBio <- merge(meanBiomass, Richness, by = "site")
 
+
+Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\BioSRyx.png",
+      type="png",
+      units="in", 
+      width=8,
+      height=6,
+      pointsize=12,
+      dpi=100)
+
 biomassPlot <- ggplot(aes(x = SpeciesRichness,y = bioPred), data = FishDataBio)
-biomassPlot + geom_point() +
-	labs(x = "Year", y = "Predator biomass (kg)")+
-  theme_classic()
+biomassPlot + geom_point(size = 2) +
+	labs(x = "Species Richness", y = "Predator biomass (kg)")+
+  theme_classic()+
+  theme(axis.title=element_text(size= 16), 
+        axis.text=element_text(size= 15))
+
+dev.off()
+
+Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\BioSRxy.png",
+      type="png",
+      units="in", 
+      width=8,
+      height=6,
+      pointsize=12,
+      dpi=100)
+
+biomassPlot <- ggplot(aes(y = SpeciesRichness, x = bioPred), data = FishDataBio)
+biomassPlot + geom_point(size = 2) +
+	labs(y = "Species Richness", x = "Predator biomass (kg)")+
+  theme_classic()+
+  theme(axis.title=element_text(size= 16), 
+        axis.text=element_text(size= 15))
+
+dev.off()
 
 
+```
+
+#biomass correlation 
+```{r}
+cor.test(FishDataBio$SpeciesRichness, FishDataBio$bioPred, method="spearman")
+cor.test(FishDataBio$SpeciesRichness, FishDataBio$bioPred, method="pearson")
+
+#no significant correlation 
 ```
 
 
@@ -131,10 +170,48 @@ names(meanAb) <- c("site", "abPred")
 
 FishDataAb <- merge(meanAb , Richness, by = "site")
 
+Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\AbSRyx.png",
+      type="png",
+      units="in", 
+      width=8,
+      height=6,
+      pointsize=12,
+      dpi=100)
+
 AbundancePlot <- ggplot(aes(x = SpeciesRichness,y = abPred), data = FishDataAb)
-AbundancePlot + geom_point() +
+AbundancePlot + geom_point(size = 2) +
   theme_classic() +
-	labs(x = "Year", y = "Predator Abundance")
+	labs(x = "Species Richness", y = "Predator Abundance")+
+  theme(axis.title=element_text(size= 16), 
+        axis.text=element_text(size= 15))
+
+dev.off()
+
+Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\AbSRxy.png",
+      type="png",
+      units="in", 
+      width=8,
+      height=6,
+      pointsize=12,
+      dpi=100)
+
+AbundancePlot <- ggplot(aes(y = SpeciesRichness, x = abPred), data = FishDataAb)
+AbundancePlot + geom_point(size = 2) +
+  theme_classic() +
+	labs(y = "Species Richness", x = "Predator Abundance")+
+  theme(axis.title=element_text(size= 16), 
+        axis.text=element_text(size= 15))
+
+dev.off()
 
 
 ```
+#abundance correlation 
+```{r}
+cor.test(FishDataAb$SpeciesRichness, FishDataAb$abPred, method="spearman")
+cor.test(FishDataAb$SpeciesRichness, FishDataAb$abPred, method="pearson")
+
+#no significant correlation 
+
+```
+

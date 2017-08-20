@@ -94,9 +94,12 @@ narrowBiomass <- ggplot(data = predatorsNarrowSC, aes(x = codes, y = LogBiomass)
 NB <- narrowBiomass + geom_boxplot() + 
   theme_classic() + 
   labs(x = "", y = "Log Predator Biomass") +
-  ggtitle("d")+ 
+  ggtitle("Narrow")+
+    scale_y_continuous(breaks=c(0,2,4,6,8,10)) +
   theme(plot.title = element_text(size=20), axis.text=element_text(size= 15), 
-        axis.text.x = element_text(angle = 90, vjust = 0.5),  axis.title=element_text(size = 17))
+        axis.text.x = element_text(angle = 90, vjust = 0.5), axis.text.y = element_text(size = 15),
+        axis.title=element_text(size= 16))
+
 
 
 #dev.off()
@@ -119,9 +122,10 @@ narrowAbundance  <- ggplot(data = predatorsNarrowSCab, aes(x = codes, y = LogAbu
 nA <- narrowAbundance  + geom_boxplot() + 
   theme_classic() + 
   labs(x = "", y = "Log Predator Abundance") +
-  ggtitle("a")+ 
+  ggtitle("Narrow")+ 
   theme(plot.title = element_text(size=20), axis.text=element_text(size= 15), 
-        axis.text.x = element_text(angle = 90, vjust = 0.5),  axis.title=element_text(size = 17))
+        axis.text.x = element_text(angle = 90, vjust = 0.5), axis.text.y = element_text(size = 15),
+        axis.title=element_text(size= 16))
 
 
 #dev.off()
@@ -171,9 +175,11 @@ IntBiomass <- ggplot(data = predatorIntSC, aes(x = codes, y = LogBiomass))
 IB <- IntBiomass + geom_boxplot() + 
   theme_classic() + 
   labs(x = "Sites", y = "") +
-  ggtitle("e")+ 
+  ggtitle("Intermediate")+ 
   theme(plot.title = element_text(size=20), axis.text=element_text(size= 15), 
-        axis.text.x = element_text(angle = 90, vjust = 0.5))
+        axis.text.x = element_text(angle = 90, vjust = 0.5),
+        axis.title=element_text(size= 16)) +
+    scale_y_continuous(breaks=c(0,2,4,6,8,10))
 
 
 #dev.off()
@@ -196,7 +202,7 @@ IntAbundance  <- ggplot(data = predatorIntSCab, aes(x = codes, y = LogAbundance)
 IA <- IntAbundance  + geom_boxplot()+ 
   theme_classic() + 
   labs(x = "", y = "") +
-  ggtitle("b")+ 
+  ggtitle("Intermediate")+ 
   theme(plot.title = element_text(size=20), axis.text=element_text(size= 15), 
         axis.text.x = element_text(angle = 90, vjust = 0.5))
 
@@ -244,9 +250,11 @@ WideBiomass <- ggplot(data = predatorWideSC, aes(x = codes, y = LogBiomass))
 WB <- WideBiomass + geom_boxplot() + 
   theme_classic() + 
   labs(x = "", y = "") +
-  ggtitle("f")+ 
+  ggtitle("Wide")+ 
   theme(plot.title = element_text(size=20), axis.text=element_text(size= 15), 
-        axis.text.x = element_text(angle = 90, vjust = 0.5))
+        axis.text.x = element_text(angle = 90, vjust = 0.5)) +
+    scale_y_continuous(breaks=c(0,2,4,6,8,10))
+
 
 
 
@@ -270,7 +278,7 @@ WideAbundance <- ggplot(data = predatorWideSCab, aes(x = codes, y = LogAbundance
 WA <- WideAbundance  + geom_boxplot()+ 
   theme_classic() + 
   labs(x = "", y = "") +
-  ggtitle("c") + 
+  ggtitle("Wide") + 
   theme(plot.title = element_text(size=20), axis.text=element_text(size= 15), 
         axis.text.x = element_text(angle = 90, vjust = 0.5))
 
