@@ -1,4 +1,5 @@
 TS<- read.csv("TSrfFiles/TSrfwinlLosev1.csv")# TSrf has been rarefied for constant number of samples
+# getting code ready
 
 nsampless<-list()
 idplace<-1
