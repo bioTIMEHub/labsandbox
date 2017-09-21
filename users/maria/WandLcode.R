@@ -1,28 +1,9 @@
+rm(list=ls())
+
 TS<- read.csv("TSrfFiles/TSrfwinlLosev1.csv")# TSrf has been rarefied for constant number of samples
 # getting code ready
 
-nsampless<-list()
-idplace<-1
-for(id in unique(TS$ID)){
-  Year<-TS$Year[TS$ID==id]
-  SampleID<-TS$SampleID[TS$ID==id]
-  nsamples<-c()
-  for(y in unique(Year)){
-    nsamples<-c(nsamples, length(unique(SampleID[Year==y])))
-  }
-  nsampless[[idplace]]<-nsamples
-  idplace<-idplace+1
-}
-ids<-unique(TS$ID)
-names(nsampless)<-ids
-#find time series with constant number of samples
-maxes<-mapply(FUN=max, nsampless)
-mins<-mapply(FUN=min, nsampless)
-constant<-maxes-mins
-
-idsconstant<-ids[constant==0]# checking that all ids have constant number of samples
-
-
+idsconstant<-unique(TS$ID)
 #####################################################################################
 # functions
 
@@ -100,19 +81,17 @@ N.turnovers <- function (vec=rbinom(50,1,0.5)) {
 
 #########################################################################
 
-#run winer and loser analysis for studies with constant sampling effort
+#run winner and loser analysis
 
 WLEC<-data.frame(ID=0,Species=0,runs.pvalue=0,col=0,ext=0,slope=0,slope.pvalue=0,Ninit=0,meanN=0)
 idplace<-1
 for(id in idsconstant){
   # getting data for relevant studyID
   data<-TS[TS$ID==id,]
-  data<- data[data$Abundance>0,]
   groups<-data.frame(as.character(data$Species),as.numeric(data$Year))
   data.mat<- tapply(data$Abundance,groups, FUN=sum)
   # formating data into species by time matrix
   data.mat[is.na(data.mat)]<-0
-  #removing species that are always absent
   N.species<-dim(data.mat)[1] #getting number of species
   WLEC[idplace:(idplace+N.species-1),]<-cbind(rep(id,N.species),rownames(data.mat),rep(NA,N.species),rep(NA,N.species),rep(NA,N.species),rep(NA,N.species),rep(NA,N.species),data.mat[,1],apply(data.mat,1,mean))
   
@@ -137,6 +116,7 @@ for(id in idsconstant){
       WLEC[WLEC$ID==id & WLEC$Species==rownames(Binary.Data)[i],3:5]<-c(runs.p$p.value, turnover[1], turnover[2])
     }
   }
+
   ##### Winers and Losers
   data.mat<-t(apply(data.mat,1,scale))# scaling by subtracting mean and dividing by sd
   Time<- unique(data$Year) #getting time vector  
@@ -186,11 +166,12 @@ WLEC$slope<-as.numeric(WLEC$slope)
 WLEC$slope.pvalue<-as.numeric(WLEC$slope.pvalue)
 write.csv(WLEC,"WLECFiles/WLECfinalv1.csv")
 #############################################
-nozeros<-subset(WLEC, is.na(runs.pvalue))
-ext<- subset(WLEC, col==0&ext==1 & runs.pvalue<0.05)
-colz<-subset(WLEC, col==1&ext==0 & runs.pvalue<0.05)
-nr0<-WLEC[placemixed,]
-r0<-subset(WLEC, runs.pvalue>0.05)
+
+nozeros<-subset(WLEC, is.na(runs.pvalue)) #trends for populations always present 
+ext<- subset(WLEC, col==0&ext==1 & runs.pvalue<0.05) # trends for pops that go extinct
+colz<-subset(WLEC, col==1&ext==0 & runs.pvalue<0.05) # trends for new colonizations
+nr0<-WLEC[placemixed,] # trends for non random multiple extinctions and colonizations
+r0<-subset(WLEC, runs.pvalue>0.05) # trends for random extinctions and colonizations
 
 
 negslope<- subset(WLEC, slope.pvalue<0.05 & slope<0)
