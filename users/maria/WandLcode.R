@@ -12,7 +12,7 @@
 
 rm(list=ls())
 
-TS<- read.csv("TSrfFiles/TSrfwinlLosev1.csv")# TSrf has been rarefied for constant number of samples
+TS<- read.csv("balancedWandL/TSrfFiles/TSrfwinlLosev4.csv")# TSrf has been rarefied for constant number of samples
 
 idsconstant<-unique(TS$ID)
 
@@ -117,7 +117,7 @@ placemixed<-subset(placemixed,!(placemixed %in%c(placeext,placecol)))
 WLEC$runs.pvalue<-as.numeric(WLEC$runs.pvalue)
 WLEC$slope<-as.numeric(WLEC$slope)
 WLEC$slope.pvalue<-as.numeric(WLEC$slope.pvalue)
-write.csv(WLEC,"WLECFiles/WLECfinalv1.csv")
+#write.csv(WLEC,"WLECFiles/WLECfinalv1.csv")
 
 ###subsetting results###################################
 
