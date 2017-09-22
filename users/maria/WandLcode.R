@@ -1,70 +1,25 @@
+# Prepared by Maria Dornelas 21 september 2017, using some functions prepared by Nick Gotelli
+
+# this script takes an object with sample rarefied species abundances for bioTIME studies with more
+# than 10 years in duration. 
+# For each population within each study, we:
+# - identify colonizations and extinctions using a runs test
+# - estimate linear slopes 
+# - estimate linear slopes that use only time series before extinctions or after colonizations
+
+# cleaned up older code prepared for the community regulation Science Advances paper
+# includes only code relevant for the winners and loosers analysis
+
 rm(list=ls())
 
 TS<- read.csv("TSrfFiles/TSrfwinlLosev1.csv")# TSrf has been rarefied for constant number of samples
-# getting code ready
 
 idsconstant<-unique(TS$ID)
-#####################################################################################
-# functions
 
+# functions #########################################################################
 
 library(tseries) #make sure the tseries package is installed
 get.coeff <- function(x,y) coef(summary(lm(y~x)))[2,c(1,4)] # function for slope and p
-
-sig.tests <- function(vec=runif(100)){
-  
-  vec <- sort(vec)  
-  
-  # simple significance, a count of tests with p <0.05 
-  simple <- length(vec[vec <= 0.05])
-  
-  # classic bonferroni with 0.05 level divided by number of tests
-  bonfer <- length(vec[vec <= 0.05/length(vec)]) 
-  
-  # bh Benjamini and Hochberg (1995) test for independent or 
-  # positively correlated families of tests
-  #--------------------------------------------------------
-  # Benjamini, Y. and Y. Hochberg. 1995. Controlling the 
-  # False Discovery Rate: a practical and powerful approach
-  # to multiple testing.
-  # J. Royal Stat Soc Ser B 57: 289-300.
-  #-------------------------------------------------------
-  comp <- 0.05*(1:length(vec))/length(vec)
-  bh <- sum(vec <= comp)
-  
-  # bl Benjamini and Liu (1999) test for positively and negatively
-  # covarying tests.
-  
-  # NOTE: With randomly constructed toy data sets in which all the tests
-  # are independent, the bl test often comes out too
-  # conservative, and seems to match more closely the classic bonferroni correction.
-  # The bh performs much better and gives surprisingly accurate results for 
-  # data sets that consist of a mixture of significant and non-significant tests.
-  
-  # For the winners and losers analysis, it might be best to use the more liberal
-  # bh test, since we want to be able to detect things that are there.
-  
-  # It would be best in the winners losers analysis to apply the test separately
-  # to each time series, because this will give the best chance of finding something
-  # in each individual series. It probably will be too conservative to lump data
-  # across studies.
-  # ------------------------------------------------------
-  # Benjamini, Y. and W. Liu. 1999. A distribution-free multiple test procedure 
-  # that controls the false discovery rate.Tel Tel Aviv, RP-SOR-99-3:
-  # Department of Statistic and O.R. Tel Aviv University.
-  
-  # Could also cite instead
-  # Benjamini, Y., D. Drai, G. Elmer, N. Kafkafi, and I. Golani. 2001.
-  # Controlling the false discovery rate in behavior genetics research.
-  # Behavioural Brain Research 125: 279-284.
-  # NOTE: Fully-worked example in Table 1 of this paper was used to confirm
-  # correct output of this function.
-  # ------------------------------------------------------
-  comp1 <- pmin(rep(0.05,length(vec)),((0.05*length(vec))/((length(vec) + 1 - (1:length(vec))))^2))
-  
-  bl <- sum(vec <= comp1)
-  return(list(simple=simple,bonfer=bonfer,bh=bh,bl=bl,raw=vec[1:simple]))
-}
 
 N.turnovers <- function (vec=rbinom(50,1,0.5)) {
   
@@ -79,23 +34,23 @@ N.turnovers <- function (vec=rbinom(50,1,0.5)) {
 }
 
 
-#########################################################################
+## loop across pops#############################################################
 
 #run winner and loser analysis
 
 WLEC<-data.frame(ID=0,Species=0,runs.pvalue=0,col=0,ext=0,slope=0,slope.pvalue=0,Ninit=0,meanN=0)
 idplace<-1
 for(id in idsconstant){
-  # getting data for relevant studyID
+  # getting data for relevant studyID 
   data<-TS[TS$ID==id,]
   groups<-data.frame(as.character(data$Species),as.numeric(data$Year))
   data.mat<- tapply(data$Abundance,groups, FUN=sum)
-  # formating data into species by time matrix
+  # formating data into species by time matrix 
   data.mat[is.na(data.mat)]<-0
   N.species<-dim(data.mat)[1] #getting number of species
   WLEC[idplace:(idplace+N.species-1),]<-cbind(rep(id,N.species),rownames(data.mat),rep(NA,N.species),rep(NA,N.species),rep(NA,N.species),rep(NA,N.species),rep(NA,N.species),data.mat[,1],apply(data.mat,1,mean))
   
-  ############### identifying extinctions and colonizations
+  # identifying extinctions and colonizations ####
   Binary.Data <- data.mat #using previously simulated data matrix
   Binary.Data[Binary.Data > 0] <- 1 # convert to binary
   
@@ -106,7 +61,7 @@ for(id in idsconstant){
   if(!is.matrix(Binary.Data)) Binary.Data <- t(Binary.Data)# HS added
   
   if(dim(Binary.Data)[1]>0){
-    # loop through the data
+    # loop runs test through the data
     for (i in 1:nrow(Binary.Data)) {
       # Extract data for a species, conduct runs test, save output
       z <- Binary.Data[i,]
@@ -117,20 +72,17 @@ for(id in idsconstant){
     }
   }
 
-  ##### Winers and Losers
+  # identifying Winners and Loosers ########################################################
   data.mat<-t(apply(data.mat,1,scale))# scaling by subtracting mean and dividing by sd
   Time<- unique(data$Year) #getting time vector  
-  ######### identifying species with positive (Winers) and negative (Losers) trends
+  # identifying species with positive (Winners) and negative (Losers) trends
   WLEC[idplace:(idplace+N.species-1),6:7]<-t(apply(data.mat,1,get.coeff,x=Time)) # apply to each row of data
 
   idplace<-idplace+N.species
 }
 
-
-
-
-################################################
-# replacing slopes of time series where an extinction or colonization occurred
+# replacing slopes ################################################
+# of time series where an extinction or colonization occurred
 # with slopes estimated for when the species was present only
 
 ltsext<-c()
@@ -158,6 +110,7 @@ for(i in placecol){
   }
 }
 
+# saving results ####
 
 placemixed<-which(WLEC$runs.pvalue<0.05)
 placemixed<-subset(placemixed,!(placemixed %in%c(placeext,placecol)))
@@ -165,7 +118,8 @@ WLEC$runs.pvalue<-as.numeric(WLEC$runs.pvalue)
 WLEC$slope<-as.numeric(WLEC$slope)
 WLEC$slope.pvalue<-as.numeric(WLEC$slope.pvalue)
 write.csv(WLEC,"WLECFiles/WLECfinalv1.csv")
-#############################################
+
+###subsetting results###################################
 
 nozeros<-subset(WLEC, is.na(runs.pvalue)) #trends for populations always present 
 ext<- subset(WLEC, col==0&ext==1 & runs.pvalue<0.05) # trends for pops that go extinct
