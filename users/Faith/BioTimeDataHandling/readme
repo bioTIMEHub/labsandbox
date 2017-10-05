@@ -1,0 +1,16 @@
+Here are the R files where I manipulate and prepare the biotime ABUNDANCE data for analysis. 
+
+Order of running files:
+
+1. Rarefy data 1000 times. 
+    This is for when you want the data rarefied so yuo can run analisys on community level 
+    data like assemblage size or species richness. You loose individual species abundance
+    and identity. This data is based on maria Dorneles' rarefying code used in the 2014 
+    science paper.
+    
+ OR
+    
+1. Rerefy data once. 
+    This rarefies the data only once. This is lessreliabel than 1000 times, but dies keep
+    indicidual species abundance and identity. This is the rarefied data that is used in 
+    subsequent analysis of dominance and evenness. 
