@@ -1,0 +1,260 @@
+---
+title: "Boxplot of predation abundance and biomass"
+author: "Faith Jones"
+date: "17 August 2017"
+output: html_document
+---
+
+this code is to combine all the data into one pannel plot showing how the median
+value of abundance is reflected in the spread of data each year. 
+
+```{r}
+###Making a plot of how high pressure predation sites are when measured in 
+#different levels of predation
+
+setwd("C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation")
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(Cairo)
+
+#preparing data 
+
+fishData <- read.csv("Fish data June 2017.csv")
+head(fishData)
+siteCodes <- read.csv("siteCodes.csv")
+
+fishData[is.na(fishData)] <- 0
+
+selectMonths <- c("07", "08")# i am selecting out these months because then i can use the last timepoint 
+
+group12 <- c("Hoplias malabaricus", "Crenicichla frenata", "Gymnotus carapo", "Anablepsoides hartii",
+			"Cichlasoma taenia", "Cichlasoma taenia", "Corynopoma riisei", "Roeboides dientonito", 
+			"Agonostomus monticola", "Rhamdia quelen", "andinoacara pulcher", "Hemigrammus unilineatus", "Rivulus hartii")
+
+
+#select data from only the July and Auguest, and remove first year 
+fishData2 <- data.frame(fishData %>% 
+	separate(date, c("Day", "Month", "Year"), sep = "/") %>%
+	filter(Year != 2010)%>%
+	filter(Month %in% selectMonths))
+
+fishData2$Year <- as.numeric(fishData2$Year)
+
+#calculate biomass
+fishData2$TotBiomass <- (fishData2$numbercaught + fishData2$numberseen)* fishData2$weight
+
+#calcuate abundance
+
+fishData2$TotAbundance <- fishData2$numbercaught + fishData2$numberseen
+```
+
+##Narrow Predation data
+
+
+```{r}
+
+#sum biomass and abundance per site and year
+predatorsNarrow <- data.frame(fishData2 %>% 
+	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata") %>%
+	group_by(site, Year) %>%
+	summarise(BiomassSum = sum(TotBiomass), AbundanceSum = sum(TotAbundance)) %>%
+  mutate(definition = "Narrow", LogBiomass = log2(BiomassSum), LogAbundance = log2(AbundanceSum + 1)))
+	
+
+#median values per site
+predatorsNarrowMed <- data.frame(fishData2 %>% 
+	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata") %>%
+	group_by(site, Year) %>%
+	summarise(BiomassSum = sum(TotBiomass), AbundanceSum = sum(TotAbundance)) %>%
+	summarise(bioMed = median(BiomassSum), AbMed = median(AbundanceSum)))
+
+predatorsNM <- merge(predatorsNarrowMed, predatorsNarrow, by = "site")
+predatorsNarrowSC <- merge(predatorsNM, siteCodes, by.x = "site", by.y = "siteNames", all = TRUE) #add site codes 
+predatorsNarrowSC[is.na(predatorsNarrowSC)] <- 0
+
+
+#ordering the data by median biomass
+predatorsNarrowSC$codes <- factor(as.character(predatorsNarrowSC$codes), 
+                                  levels = predatorsNarrowSC$codes[order(predatorsNarrowSC$bioMed)])
+
+Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\NarrowBioBox.png",
+      type="png",
+       units="in", 
+      width=8,
+      height=6,
+      pointsize=12,
+      dpi=100)
+
+#plotting biomass
+narrowBiomass <- ggplot(data = predatorsNarrowSC, aes(x = codes, y = LogBiomass))
+narrowBiomass + geom_boxplot() + 
+  theme_classic() + 
+  labs(x = "Sites", y = "Log Predator Biomass") +
+  theme(text = element_text(size=19))
+
+dev.off()
+
+#ordering the data by median abundance
+predatorsNarrowSCab <- predatorsNarrowSC # create a new dataframe to osder based on abundace values 
+predatorsNarrowSCab$codes <- factor(as.character(predatorsNarrowSCab$codes), 
+                                  levels = predatorsNarrowSCab$codes[order(predatorsNarrowSCab$AbMed)])
+
+Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\NarrowAbBox.png",
+      type="png",
+      units="in", 
+      width=8,
+      height=6,
+      pointsize=12,
+      dpi=100)
+
+#plotting abundance
+narrowAbundance  <- ggplot(data = predatorsNarrowSCab, aes(x = codes, y = LogAbundance))
+narrowAbundance  + geom_boxplot() + 
+  theme_classic() + 
+  labs(x = "Sites", y = "Log Predator Abundance")+
+  theme(text = element_text(size=19))
+
+dev.off()
+
+```
+
+##Intermediate Predation Data
+
+
+```{r}
+predatorsInt <- data.frame(fishData2 %>% 
+	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata" | 
+		species == "Gymnotus carapo" | species == "Rivulus hartii") %>%
+	group_by(site, Year) %>%
+	summarise(BiomassSum = sum(TotBiomass), AbundanceSum = sum(TotAbundance)) %>%
+  mutate(definition = "Intermediate", LogBiomass = log2(BiomassSum), LogAbundance = log2(AbundanceSum + 1)))
+
+
+#median values per site
+predatorsIntwMed <- data.frame(fishData2 %>% 
+	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata" | 
+		species == "Gymnotus carapo" | species == "Rivulus hartii") %>%
+	group_by(site, Year) %>%
+	summarise(BiomassSum = sum(TotBiomass), AbundanceSum = sum(TotAbundance)) %>%
+	summarise(bioMed = median(BiomassSum), AbMed = median(AbundanceSum)))
+
+predatorsIM <- merge(predatorsIntwMed, predatorsInt , by = "site")
+predatorIntSC <- merge(predatorsIM, siteCodes, by.x = "site", by.y = "siteNames", all = TRUE) #add site codes 
+predatorIntSC[is.na(predatorIntSC)] <- 0
+
+
+
+#ordering the data by median biomass
+predatorIntSC$codes <- factor(as.character(predatorIntSC$codes), 
+                                  levels = predatorIntSC$codes[order(predatorIntSC$bioMed)])
+
+Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\InterBioBox.png",
+      type="png",
+      units="in", 
+      width=8,
+      height=6,
+      pointsize=12,
+      dpi=100)
+
+#plotting biomass
+IntBiomass <- ggplot(data = predatorIntSC, aes(x = codes, y = LogBiomass))
+IntBiomass + geom_boxplot() + 
+  theme_classic() + 
+  labs(x = "Sites", y = "Log Predator Biomass")+
+  theme(text = element_text(size=19))
+
+dev.off()
+
+#ordering the data by median abundance
+predatorIntSCab <- predatorIntSC # create a new dataframe to osder based on abundace values 
+predatorIntSCab$codes <- factor(as.character(predatorIntSCab$codes), 
+                                  levels = predatorIntSCab$codes[order(predatorIntSCab$AbMed)])
+
+Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\InterAbBox.png",
+      type="png",
+      units="in", 
+      width=8,
+      height=6,
+      pointsize=12,
+      dpi=100)
+
+#plotting abundance
+IntAbundance  <- ggplot(data = predatorIntSCab, aes(x = codes, y = LogAbundance))
+IntAbundance  + geom_boxplot()+ 
+  theme_classic() + 
+  labs(x = "Sites", y = "Log Predator Abundance")+
+  theme(text = element_text(size=19))
+
+dev.off()
+
+```
+
+##Wide Predation Data
+
+```{r}
+predatorsWide <- data.frame(fishData2 %>% 
+	filter(species %in% group12) %>%
+	group_by(site, Year) %>%
+	summarise(BiomassSum = sum(TotBiomass), AbundanceSum = sum(TotAbundance)) %>%
+  mutate(definition = "Wide", LogBiomass = log2(BiomassSum), LogAbundance = log2(AbundanceSum + 1)))
+
+
+#median values per site
+predatorsWideMed <- data.frame(fishData2 %>% 
+	filter(species %in% group12) %>%
+	group_by(site, Year) %>%
+	summarise(BiomassSum = sum(TotBiomass), AbundanceSum = sum(TotAbundance)) %>%
+	summarise(bioMed = median(BiomassSum), AbMed = median(AbundanceSum)))
+
+predatorsWM <- merge(predatorsWideMed, predatorsWide , by = "site")
+predatorWideSC <- merge(predatorsWM, siteCodes, by.x = "site", by.y = "siteNames", all = TRUE) #add site codes 
+predatorWideSC[is.na(predatorWideSC)] <- 0 
+
+
+#ordering the data by median biomass
+predatorWideSC$codes <- factor(as.character(predatorWideSC$codes), 
+                                  levels = predatorWideSC$codes[order(predatorWideSC$bioMed)])
+
+Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\WideBioBox.png",
+      type="png",
+      units="in", 
+      width=8,
+      height=6,
+      pointsize=12,
+      dpi=100)
+
+#plotting biomass
+WideBiomass <- ggplot(data = predatorWideSC, aes(x = codes, y = LogBiomass))
+WideBiomass + geom_boxplot() + 
+  theme_classic() + 
+  labs(x = "Sites", y = "Log Predator Biomass")+
+  theme(text = element_text(size=19))
+
+dev.off()
+
+#ordering the data by median abundance
+predatorWideSCab <- predatorWideSC # create a new dataframe to osder based on abundace values 
+predatorWideSCab$codes <- factor(as.character(predatorWideSCab$codes), 
+                                  levels = predatorWideSCab$codes[order(predatorWideSCab$AbMed)])
+
+Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\WideAbBox.png",
+      type="png",
+      units="in", 
+      width=8,
+      height=6,
+      pointsize=12,
+      dpi=100)
+
+#plotting abundance
+WideAbundance <- ggplot(data = predatorIntSCab, aes(x = codes, y = LogAbundance))
+WideAbundance  + geom_boxplot()+ 
+  theme_classic() + 
+  labs(x = "Sites", y = "Log Predator Abundance")+
+  theme(text = element_text(size=19))
+
+dev.off()
+
+```
+
+

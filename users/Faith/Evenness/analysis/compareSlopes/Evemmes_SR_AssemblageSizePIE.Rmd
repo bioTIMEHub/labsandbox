@@ -1,0 +1,187 @@
+---
+title: "A comparison between evenness(PIE) change and Species Richness/Assemblage Size change"
+author: "Faith Jones"
+date: "5 June 2017"
+output: html_document
+---
+```{r, include=FALSE}
+library(ggplot2)
+library(ggExtra)
+library(vegan)
+library(reshape2)
+```
+
+
+```{r, include=FALSE}
+evennessSim <- read.csv("C:/Users/faj/Documents/OneDrive for Business/research/ch3 - metaanalysis/data/evennessChangeSimp.csv")
+evenness <- read.csv("C:/Users/faj/Documents/OneDrive for Business/research/ch3 - metaanalysis/data/evennessChange.csv")
+Abundance <- read.csv("C:/Users/faj/Documents/OneDrive for Business/research/ch3 - metaanalysis/data/AbundanceCapacityChange.csv")
+AbDominance <- read.csv("C:/Users/faj/Documents/OneDrive for Business/research/ch3 - metaanalysis/data/ActualAbundanceChange.csv")
+RelDominance <- read.csv("C:/Users/faj/Documents/OneDrive for Business/research/ch3 - metaanalysis/data/PercentAbundanceChange.csv")
+rareity <- read.csv("C:/Users/faj/Documents/OneDrive for Business/research/ch3 - metaanalysis/data/rarityChange.csv")
+rareity2 <- read.csv("C:/Users/faj/Documents/OneDrive for Business/research/ch3 - metaanalysis/data/rarityChangeSingelton.csv")
+SRChange <- read.csv("C:/Users/faj/Documents/OneDrive for Business/research/ch3 - metaanalysis/data/SpeciesRichnessChange.csv")
+
+##renaming columns so they make sense 
+names(Abundance)[4] <- "AbundanceAll"
+names(evennessSim)[4] <- "EvennessSim1"
+names(evenness)[4] <- "Evenness"
+names(AbDominance)[4] <- "AbundanceDom"
+names(RelDominance)[4] <- "relativeDom"
+names(rareity)[4] <- "Rareity"
+names(rareity2)[4] <- "Rareity2"
+
+##merging all data
+AbEv <- merge(Abundance, evenness, by = "Study")
+AbRel <- merge(AbDominance, RelDominance, by = "Study")
+RareChange <- merge(rareity,AbRel, by = "Study")
+RareChange2 <- merge(rareity2,RareChange, by = "Study")
+Allchange1 <- merge(AbEv,RareChange2, by = "Study")
+AllSR <- merge(SRChange,Allchange1, by.x = "Study_ID", by.y = "Study")
+Allchange <- merge(evennessSim, AllSR,  by.y = "Study_ID", by.x = "Study")
+names(Allchange)
+
+#selecting only columns with coefficients of change, and not all teh
+#extra info like taxa or ;ength of study
+selectData <- Allchange[,c(1,4, 13, 18, 29, 38, 44, 50, 60, 5, 61, 62, 41)]
+head(selectData)
+
+##plot scatter plot with marginal histograms
+#evennes-assemblage size
+evAss <- ggplot(selectData, aes( AbundanceAll, EvennessSim1)) + 
+	geom_point() + 
+	theme_classic()
+ggMarginal(evAss, type = "histogram")
+
+#chaneg taxa to just invert/vert/plant
+levels(selectData$TAXA.x)
+levels(selectData$TAXA.x)[1] <- "Multipe"
+levels(selectData$TAXA.x)[2] <- "Vertebrate"
+levels(selectData$TAXA.x)[4] <- "Vertebrate"
+levels(selectData$TAXA.x)[4] <- "Vertebrate"
+levels(selectData$TAXA.x)[5] <- "Vertebrate"
+levels(selectData$TAXA.x)[6] <- "Vertebrate"
+levels(selectData$TAXA.x)[3] <- "Multipe"
+selectData <- unique(selectData)
+
+```
+
+##Description of the plots
+The below plots are to see if there are any interesting patterns in the 
+relationship between evenness change and assemblage size or species richness. 
+Before plotting I checked how many assemblages are in each type of taxa, realm
+and protected area stuatus. The high proportion of plants in protected areas
+makes it diffiult to interpret the affects of protected area on change. 
+
+```{r}
+aggdata <- aggregate(selectData$Study, by=list(selectData$REALM, 
+                                               selectData$PROTECTED_AREA.y.1, 
+                                               selectData$TAXA.x),
+  FUN=length)
+names(aggdata) <- c("Realm", "Protected_area", "Taxa", "Count")
+print(aggdata)
+```
+
+##EVENESS and ABUNDANCE
+
+
+
+How does evenness change relate to assemblage size change, coloured by taxa
+```{r}
+evAssT <- ggplot(selectData, aes( AbundanceAll, EvennessSim1, col = TAXA.x)) + 
+	geom_point() + 
+	theme_classic()+ 
+	geom_vline(xintercept=c(0.05, -0.05), lty="dashed", col = "grey")+ 
+	geom_hline(yintercept=c(0.0025, -0.0025), lty="dashed", col = "grey")+
+	scale_colour_manual(values = c("DarkViolet", "Orange","LightBlue", "Green"))+
+	labs(x = "Assembalge Size Change", y = "Evenness Change")
+	ggMarginal(evAssT, type = "histogram", bins = 25)
+```
+
+
+
+How does evenness change relate to assemblage size change, coloured by whether or
+not the assemblage is located within a protected area
+```{r}
+evAssPA <- ggplot(selectData, aes( AbundanceAll, EvennessSim1, col = PROTECTED_AREA.y.1)) + 
+	geom_point() + 
+	theme_classic() + 
+	geom_vline(xintercept=c(0.05, -0.05), lty="dashed", col = "grey")+ 
+	geom_hline(yintercept=c(0.0025, -0.0025), lty="dashed", col = "grey")+
+	labs(x = "Assembalge Size Change", y = "Evenness Change")
+	ggMarginal(evAssPA, type = "histogram", bins = 25)
+```
+
+
+
+How does evenness change relate to assemblage size change, point size related to 
+length of study
+```{r}
+evAssL <- ggplot(selectData, aes( AbundanceAll, EvennessSim1, size = LengthYears.y)) + 
+	geom_point() + 
+	theme_classic()+ 
+	geom_vline(xintercept=c(0.05, -0.05), lty="dashed", col = "grey")+ 
+	geom_hline(yintercept=c(0.0025, -0.0025), lty="dashed", col = "grey")+
+	labs(x = "Assembalge Size Change", y = "Evenness Change")
+ggMarginal(evAssL, type = "histogram", bins = 25)
+```
+
+
+
+How does evenness change relate to assemblage size change, coloured by realm the 
+assemblage is located in 
+```{r}
+evAssR <- ggplot(selectData, aes( AbundanceAll, EvennessSim1, col = REALM)) + 
+	geom_point() + 
+	theme_classic()+ 
+	geom_vline(xintercept=c(0.05, -0.05), lty="dashed", col = "grey")+ 
+	geom_hline(yintercept=c(0.0025, -0.0025), lty="dashed", col = "grey")+
+	scale_colour_manual(values = c("Orange","LightBlue", "Green"))+
+	labs(x = "Assembalge Size Change", y = "Evenness Change")
+ggMarginal(evAssR, type = "histogram", bins = 25)
+```
+
+##EVENNESS and SPECIES RICHNESS
+
+How does evenness change relate to species richness change, coloured by taxa
+
+```{r}
+evAbT <- ggplot(selectData, aes( SRslope, EvennessSim1, col = TAXA.x)) + 
+	geom_point() + 
+	theme_classic()+ 
+	geom_vline(xintercept=c(0.03, -0.03), lty="dashed", col = "grey")+ 
+	geom_hline(yintercept=c(0.0025, -0.0025), lty="dashed", col = "grey")+
+	scale_colour_manual(values = c("DarkViolet", "Orange","LightBlue", "Green"))+
+	labs(x = "Species Richness Change", y = "Evenness Change")
+ggMarginal(evAbT, type = "histogram", bins = 25)
+```
+
+
+
+How does evenness change relate to species richness change, coloured by whether or
+not the assemblage is located within a protected area
+
+```{r}
+evAbPA <- ggplot(selectData, aes( SRslope, EvennessSim1, col = PROTECTED_AREA.y.1)) + 
+	geom_point() + 
+	theme_classic()+ 
+	geom_vline(xintercept=c(0.03, -0.03), lty="dashed", col = "grey")+ 
+	geom_hline(yintercept=c(0.0025, -0.0025), lty="dashed", col = "grey")+
+	labs(x = "Species Richness Change", y = "Evenness Change")
+ggMarginal(evAbPA, type = "histogram", bins = 25)
+```
+
+
+
+How does evenness change relate to species richness change, coloured by teh realm
+the assemblage is located in 
+```{r}
+evAbSR <- ggplot(selectData, aes(SRslope, EvennessSim1, col = REALM)) + 
+	geom_point() + 
+	theme_classic()+ 
+	geom_vline(xintercept=c(0.03, -0.03), lty="dashed", col = "grey")+ 
+	geom_hline(yintercept=c(0.0025, -0.0025), lty="dashed", col = "grey")+
+	scale_colour_manual(values = c("Orange","LightBlue", "Green"))+
+	labs(x = "Species Richness Change", y = "Evenness Change")
+ggMarginal(evAbSR, type = "histogram", bins = 25)
+```

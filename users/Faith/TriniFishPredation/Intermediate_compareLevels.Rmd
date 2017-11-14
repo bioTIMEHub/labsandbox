@@ -1,0 +1,191 @@
+---
+title: "Intermediate Predation Tanglegram"
+author: "Faith Jones"
+date: "8 August 2017"
+output: html_document
+---
+
+This scripts makes a tanglegram to compare the order of biomass vs abundance
+defined sites, when you use the Narrow definition of predation (Hoplias malabaricus
+and Crenicichla frenata. 
+
+```{r, include=FALSE}
+###Making a plot of how high pressure predation sites are when measured in 
+#different levels of predation ABUNDANCE
+
+setwd("C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation")
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(lme4)
+library(Cairo)
+
+
+#preparing data 
+
+fishDataAll <- read.csv("Fish data June 2017.csv")
+head(fishDataAll)
+
+siteCodes <- read.csv("siteCodes.csv")
+
+selectMonths <- c("07", "08")# i am selecting out these months because then i can use the last timepoint 
+
+#select data from only the July and Auguest, and remove first year 
+SelectData <- fishDataAll %>% 
+	separate(date, c("Day", "Month", "Year"), sep = "/") %>%
+	filter(Year != 2010)%>%
+	filter(Month %in% selectMonths)
+
+fishData <- data.frame(SelectData)
+
+fishData$AbundanceAll <- fishData$numbercaught + fishData$numberseen
+
+#calculating percentage biomass so i can incude years with 0 abundance
+
+fishData$TotBiomass <- (fishData$numbercaught + fishData$numberseen)* fishData$weight
+TotBioSite<- fishData %>% 
+	group_by(site, Year) %>%
+	summarise(BiomasSiteSum = sum(TotBiomass, na.rm=TRUE))
+siteBiomass <- data.frame(TotBioSite)
+
+
+#Narrow Predation data
+#-------------------------
+
+head(fishData)
+predatorsAbI <- fishData %>% 
+	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata" | 
+		species == "Gymnotus carapo" | species == "Rivulus hartii")  %>%
+	group_by(site, Year) %>%
+	summarise(AbundanceSum = sum(AbundanceAll))
+
+predatorsAI <- data.frame(predatorsAbI)
+predatorsAI$Year <- as.numeric(predatorsAI$Year)
+
+#add the total site biomass data, just to i can identify sites with no predators 
+FishDataTotAI <- merge(siteBiomass, predatorsAI, by = c("site" ,"Year"),all=TRUE) # this makes sure i 
+#know what years had no predators recoreded in 
+FishDataTotAI$AbundanceSum[is.na(FishDataTotAI$AbundanceSum)] <- 0
+
+IntermediateA <- aggregate(FishDataTotAI$AbundanceSum, list(FishDataTotAI$site), mean, na.rm=TRUE)
+
+orderIntermediateA <- IntermediateA[order(IntermediateA$x),]
+head(orderIntermediateA)
+
+IntermediateA$predOrderNa <- c(1:nrow(orderIntermediateA))
+```
+
+```{r, include=FALSE}
+setwd("C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\FishPredation\\Data")
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(lme4)
+library(Cairo)
+
+
+#preparing data 
+
+fishDataAll <- read.csv("Fish data June 2017.csv")
+head(fishDataAll)
+str(fishDataAll)
+levels(fishDataAll$species)
+selectMonths <- c("07", "08")# i am selecting out these months because then i can use the last timepoint 
+
+
+#select data from only the July and Auguest, and remove first year 
+SelectData <- fishDataAll %>% 
+	separate(date, c("Day", "Month", "Year"), sep = "/") %>%
+	filter(Year != 2010)%>%
+	filter(Month %in% selectMonths)
+
+fishData <- data.frame(SelectData)
+
+#calculate biomass
+fishData$TotBiomass <- (fishData$numbercaught + fishData$numberseen)* fishData$weight
+
+
+#calculating percentage biomass
+TotBioSite<- fishData %>% 
+	group_by(site, Year) %>%
+	summarise(BiomasSiteSum = sum(TotBiomass, na.rm=TRUE))
+
+siteBiomassI <- data.frame(TotBioSite)
+
+#intermediate Predation data
+#-------------------------
+
+#sum biomass per site and year
+predatorsBioI <- fishData %>% 
+	filter(species == "Hoplias malabaricus" | species == "Crenicichla frenata" | 
+		species == "Gymnotus carapo" | species == "Rivulus hartii") %>%
+	group_by(site, Year) %>%
+	summarise(BiomassSum = sum(TotBiomass))
+
+predatorsBioI <- data.frame(predatorsBioI)
+predatorsBioI$Year <- as.numeric(predatorsBioI$Year)
+siteBiomassI$Year <- as.numeric(siteBiomassI$Year)
+
+FishDataTotI <- merge(siteBiomassI, predatorsBioI, by = c("site" ,"Year"),all=TRUE) # this makes sure i 
+#know what years had no predators recoreded in 
+head(FishDataTotI)
+FishDataTotI$BiomassSum[is.na(FishDataTotI$BiomassSum)] <- 0
+
+FishDataTotI$PropMass <- FishDataTotI$BiomassSum / FishDataTotI$BiomasSiteSum
+
+NarrowIb <- aggregate(FishDataTotI$BiomassSum, list(FishDataTotI$site), mean, na.rm=TRUE)
+
+orderNarrowIb <- NarrowIb [order(NarrowIb$x),]
+head(orderNarrowIb)
+
+orderNarrowIb$predOrderNb <- c(1:nrow(orderNarrowIb))
+
+```
+
+```{r, include=FALSE}
+
+bothIntermediatec <- merge(orderNarrowIb, IntermediateA, by = "Group.1")
+bothIntermediate <- merge(bothIntermediatec, siteCodes, by.x = "Group.1", by.y = "siteNames")
+
+```
+
+```{R}
+Cairo(file="C:\\Users\\faj\\Documents\\OneDrive for Business\\research\\bioTIME\\users\\Faith\\TriniFishPredation\\IntermediateAB_tangle.png",
+      type="png",
+       units="in", 
+      width=8,
+      height=6,
+      pointsize=12,
+      dpi=100)
+
+plotSetup <- data.frame(cbind(c(1:17),c(20:60))) # data to plot onto emptyp plot
+plot(x = plotSetup$X2, y = plotSetup$X1, col="white", axes=FALSE , ylab = " ", xlab = "  ", type = "n")
+
+#plot arrows
+arrows(x0 = 33, y0 = bothIntermediate$predOrderNa, x1 = 51, y1 = bothIntermediate$predOrderNb, length = 0.001)
+
+
+#plotting text 
+text(x = 52, y = bothIntermediate$predOrderNb, labels = bothIntermediate$codes, adj = c(0,NA))
+text(x = 32, y = bothIntermediate$predOrderNa, labels = bothIntermediate$codes, adj = c(1,NA))
+
+
+text(x = 31, y = 17, labels = "Abundance", cex = 1.5)
+text(x = 53, y = 17, labels = "Biomass", cex = 1.5)
+
+
+dev.off()
+
+```
+
+#SPearmans correlation 
+
+```{r}
+rownames(bothIntermediate) <-  bothIntermediate$Group.1
+corOrderInter <-  bothIntermediate[,c(2, 4)] 
+names(corOrderInter) <-  c("Biomass", "Abundance")
+cor(corOrderInter, method="spearman")
+cor.test(corOrderInter$Biomass, corOrderInter$Abundance, method="spearman")
+```

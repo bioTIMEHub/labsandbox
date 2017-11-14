@@ -1,7 +1,7 @@
 # bioTIME
 
-This is the repository for the ... lab at the University of St Andrews...
+This is the repository for the BioTIME lab at the University of St Andrews
 
-Contact details
+Contact details:
 
-Website....
+https://synergy.st-andrews.ac.uk/biotime/
